@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ModMetaData>
+  <name>Outfit Manager</name>
+  <author>LordKuper</author>
+  <supportedVersions>
+    <li>1.0</li>
+  </supportedVersions>
+  <description>
+    Outfit management mod
+  </description>
+</ModMetaData>
