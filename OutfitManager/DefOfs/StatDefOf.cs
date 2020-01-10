@@ -37,6 +37,7 @@ namespace OutfitManager.DefOfs
         public static StatDef HuntingStealth;
         public static StatDef Insulation_Cold;
         public static StatDef Insulation_Heat;
+        public static StatDef Mass;
         public static StatDef MedicalOperationSpeed;
         public static StatDef MedicalSurgerySuccessChance;
         public static StatDef MedicalTendQuality;

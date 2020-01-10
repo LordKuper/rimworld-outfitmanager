@@ -27,19 +27,19 @@ namespace OutfitManager
             if (worktype == WorkTypeDefOf.Art)
                 // Work :: SculptingSpeed :: Sculpting speed
             {
-                stats.Add(new StatPriority(StatDefOf.SculptingSpeed, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.SculptingSpeed, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.BasicWorker)
                 // Work :: UnskilledLaborSpeed :: Unskilled labor speed
             {
-                stats.Add(new StatPriority(StatDefOf.UnskilledLaborSpeed, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.UnskilledLaborSpeed, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Cleaning)
             {
                 // Basics :: MoveSpeed :: Move speed
                 // Work :: WorkSpeedGlobal :: Global work speed
-                stats.Add(new StatPriority(StatDefOf.MoveSpeed, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.WorkSpeedGlobal, Priority.Desired));
+                stats.Add(new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MinorPositive));
             }
             if (worktype == WorkTypeDefOf.Cooking)
             {
@@ -47,10 +47,10 @@ namespace OutfitManager
                 // Work :: FoodPoisonChance :: Food poison chance
                 // Work :: ButcheryFleshSpeed :: Butchery speed
                 // Work :: ButcheryFleshEfficiency :: Butchery efficiency
-                stats.Add(new StatPriority(StatDefOf.CookSpeed, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.FoodPoisonChance, Priority.Unwanted));
-                stats.Add(new StatPriority(StatDefOf.ButcheryFleshSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.ButcheryFleshEfficiency, Priority.Desired));
+                stats.Add(new StatPriority(StatDefOf.CookSpeed, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.FoodPoisonChance, OutfitStatPriority.MajorNegative));
+                stats.Add(new StatPriority(StatDefOf.ButcheryFleshSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.ButcheryFleshEfficiency, OutfitStatPriority.MinorPositive));
             }
             if (worktype == WorkTypeDefOf.Construction)
             {
@@ -60,10 +60,11 @@ namespace OutfitManager
                  * Work :: FixBrokenDownBuildingSuccessChance :: Repair success chance
                    Work :: SmoothingSpeed :: Smoothing speed
                  */
-                stats.Add(new StatPriority(StatDefOf.ConstructionSpeed, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.ConstructSuccessChance, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.FixBrokenDownBuildingSuccessChance, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.SmoothingSpeed, Priority.Desired));
+                stats.Add(new StatPriority(StatDefOf.ConstructionSpeed, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.ConstructSuccessChance, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.FixBrokenDownBuildingSuccessChance,
+                    OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.SmoothingSpeed, OutfitStatPriority.MinorPositive));
             }
             if (worktype == WorkTypeDefOf.Crafting)
             {
@@ -71,11 +72,11 @@ namespace OutfitManager
                 // Work :: DrugCookingSpeed :: Drug cooking speed
                 // Work :: ButcheryMechanoidSpeed :: Mechanoid disassembly speed
                 // Work :: ButcheryMechanoidEfficiency :: Mechanoid disassembly efficiency
-                stats.Add(new StatPriority(StatDefOf.WorkSpeedGlobal, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.DrugSynthesisSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.DrugCookingSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.ButcheryMechanoidSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.ButcheryMechanoidEfficiency, Priority.Desired));
+                stats.Add(new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.DrugSynthesisSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.DrugCookingSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.ButcheryMechanoidSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.ButcheryMechanoidEfficiency, OutfitStatPriority.MinorPositive));
             }
             if (worktype == WorkTypeDefOf.Doctor)
             {
@@ -85,22 +86,22 @@ namespace OutfitManager
                  * Work :: MedicalOperationSpeed :: Medical operation speed
                  * Work :: MedicalSurgerySuccessChance :: Medical surgery success chance
                  */
-                stats.Add(new StatPriority(StatDefOf.MedicalTendSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.MedicalTendQuality, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.MedicalOperationSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.MedicalSurgerySuccessChance, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.MedicalTendSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.MedicalTendQuality, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.MedicalOperationSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.MedicalSurgerySuccessChance, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Firefighter)
                 // Basics :: MoveSpeed :: Move speed
             {
-                stats.Add(new StatPriority(StatDefOf.MoveSpeed, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Growing)
             {
                 // Work :: PlantWorkSpeed :: Plant work speed
                 // Work :: PlantHarvestYield :: Plant harvest yield
-                stats.Add(new StatPriority(StatDefOf.PlantWorkSpeed, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.PlantHarvestYield, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.PlantWorkSpeed, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.PlantHarvestYield, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Handling)
             {
@@ -111,11 +112,11 @@ namespace OutfitManager
                  * Work :: AnimalGatherSpeed :: Animal gather speed
                  * Work :: AnimalGatherYield :: Animal gather yield
                  */
-                stats.Add(new StatPriority(StatDefOf.MoveSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.TameAnimalChance, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.TrainAnimalChance, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.AnimalGatherSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.AnimalGatherYield, Priority.Desired));
+                stats.Add(new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.TameAnimalChance, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.TrainAnimalChance, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.AnimalGatherSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.AnimalGatherYield, OutfitStatPriority.MinorPositive));
             }
             if (worktype == WorkTypeDefOf.Hauling)
             {
@@ -123,8 +124,8 @@ namespace OutfitManager
                  * Basics :: CarryingCapacity :: Carrying capacity
                  * Basics :: MoveSpeed :: Move speed
                  */
-                stats.Add(new StatPriority(StatDefOf.CarryingCapacity, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.MoveSpeed, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.CarryingCapacity, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Hunting)
             {
@@ -140,16 +141,16 @@ namespace OutfitManager
                  * Weapon :: RangedWeapon_Cooldown :: Ranged cooldown
                  * Weapon :: RangedWeapon_DamageMultiplier :: Damage multiplier
                  */
-                stats.Add(new StatPriority(StatDefOf.MoveSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.ShootingAccuracyPawn, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.AimingDelayFactor, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.HuntingStealth, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.AccuracyTouch, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.AccuracyShort, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.AccuracyMedium, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.AccuracyLong, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.RangedWeapon_Cooldown, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.RangedWeapon_DamageMultiplier, Priority.Desired));
+                stats.Add(new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.ShootingAccuracyPawn, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.AimingDelayFactor, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.HuntingStealth, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.AccuracyTouch, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.AccuracyShort, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.AccuracyMedium, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.AccuracyLong, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.RangedWeapon_Cooldown, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.RangedWeapon_DamageMultiplier, OutfitStatPriority.MinorPositive));
             }
             if (worktype == WorkTypeDefOf.Mining)
             {
@@ -157,8 +158,8 @@ namespace OutfitManager
                  * Work :: MiningSpeed :: Mining speed
                  * Work :: MiningYield :: Mining yield
                  */
-                stats.Add(new StatPriority(StatDefOf.MiningSpeed, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.MiningYield, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.MiningSpeed, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.MiningYield, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Patient || worktype == WorkTypeDefOf.PatientBedRest)
             {
@@ -168,25 +169,25 @@ namespace OutfitManager
             {
                 // Work :: PlantWorkSpeed :: Plant work speed
                 // Work :: PlantHarvestYield :: Plant harvest yield
-                stats.Add(new StatPriority(StatDefOf.PlantWorkSpeed, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.PlantHarvestYield, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.PlantWorkSpeed, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.PlantHarvestYield, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Research)
                 // Work :: ResearchSpeed :: Research speed
             {
-                stats.Add(new StatPriority(StatDefOf.ResearchSpeed, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.ResearchSpeed, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Smithing)
             {
                 // Work :: SmithingSpeed :: Smithing speed
                 // Work :: SmeltingSpeed :: Smelting speed
-                stats.Add(new StatPriority(StatDefOf.SmeltingSpeed, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.SmithingSpeed, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.SmeltingSpeed, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.SmithingSpeed, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Tailoring)
                 // Work :: TailoringSpeed :: Tailoring speed
             {
-                stats.Add(new StatPriority(StatDefOf.TailoringSpeed, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.TailoringSpeed, OutfitStatPriority.MajorPositive));
             }
             if (worktype == WorkTypeDefOf.Warden)
             {
@@ -195,9 +196,9 @@ namespace OutfitManager
                  * Social :: TradePriceImprovement :: Trade price improvement
                  * Social :: SocialImpact :: Social impact
                  */
-                stats.Add(new StatPriority(StatDefOf.NegotiationAbility, Priority.Wanted));
-                stats.Add(new StatPriority(StatDefOf.TradePriceImprovement, Priority.Desired));
-                stats.Add(new StatPriority(StatDefOf.SocialImpact, Priority.Wanted));
+                stats.Add(new StatPriority(StatDefOf.NegotiationAbility, OutfitStatPriority.MajorPositive));
+                stats.Add(new StatPriority(StatDefOf.TradePriceImprovement, OutfitStatPriority.MinorPositive));
+                stats.Add(new StatPriority(StatDefOf.SocialImpact, OutfitStatPriority.MajorPositive));
             }
             return stats;
         }

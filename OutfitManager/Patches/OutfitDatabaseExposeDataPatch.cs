@@ -41,40 +41,40 @@ namespace OutfitManager.Patches
                 default:
                     newOutfit.AddStatPriorities(new List<StatPriority>
                     {
-                        new StatPriority(StatDefOf.MoveSpeed, Priority.Desired),
-                        new StatPriority(StatDefOf.WorkSpeedGlobal, Priority.Wanted),
-                        new StatPriority(StatDefOf.ArmorRating_Blunt, Priority.Desired),
-                        new StatPriority(StatDefOf.ArmorRating_Sharp, Priority.Desired)
+                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MajorPositive),
+                        new StatPriority(StatDefOf.ArmorRating_Blunt, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.ArmorRating_Sharp, OutfitStatPriority.MinorPositive)
                     });
                     break;
                 case "Worker":
                     newOutfit.AddStatPriorities(new List<StatPriority>
                     {
-                        new StatPriority(StatDefOf.MoveSpeed, Priority.Neutral),
-                        new StatPriority(StatDefOf.WorkSpeedGlobal, Priority.Desired)
+                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.Neutral),
+                        new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MinorPositive)
                     });
                     break;
                 case "Soldier":
                     newOutfit.AddStatPriorities(new List<StatPriority>
                     {
-                        new StatPriority(StatDefOf.ShootingAccuracyPawn, Priority.Wanted),
-                        new StatPriority(StatDefOf.AccuracyShort, Priority.Desired),
-                        new StatPriority(StatDefOf.AccuracyMedium, Priority.Desired),
-                        new StatPriority(StatDefOf.AccuracyLong, Priority.Desired),
-                        new StatPriority(StatDefOf.MoveSpeed, Priority.Desired),
-                        new StatPriority(StatDefOf.ArmorRating_Blunt, Priority.Neutral),
-                        new StatPriority(StatDefOf.ArmorRating_Sharp, Priority.Desired),
-                        new StatPriority(StatDefOf.MeleeDodgeChance, Priority.Neutral),
-                        new StatPriority(StatDefOf.AimingDelayFactor, Priority.Unwanted),
-                        new StatPriority(StatDefOf.RangedWeapon_Cooldown, Priority.Unwanted),
-                        new StatPriority(StatDefOf.PainShockThreshold, Priority.Wanted)
+                        new StatPriority(StatDefOf.ShootingAccuracyPawn, OutfitStatPriority.MajorPositive),
+                        new StatPriority(StatDefOf.AccuracyShort, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.AccuracyMedium, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.AccuracyLong, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.ArmorRating_Blunt, OutfitStatPriority.Neutral),
+                        new StatPriority(StatDefOf.ArmorRating_Sharp, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.MeleeDodgeChance, OutfitStatPriority.Neutral),
+                        new StatPriority(StatDefOf.AimingDelayFactor, OutfitStatPriority.MajorNegative),
+                        new StatPriority(StatDefOf.RangedWeapon_Cooldown, OutfitStatPriority.MajorNegative),
+                        new StatPriority(StatDefOf.PainShockThreshold, OutfitStatPriority.MajorPositive)
                     });
                     break;
                 case "Nudist":
                     newOutfit.AddStatPriorities(new List<StatPriority>
                     {
-                        new StatPriority(StatDefOf.MoveSpeed, Priority.Desired),
-                        new StatPriority(StatDefOf.WorkSpeedGlobal, Priority.Wanted)
+                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive),
+                        new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MajorPositive)
                     });
                     break;
             }

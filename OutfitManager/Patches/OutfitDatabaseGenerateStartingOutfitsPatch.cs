@@ -6,13 +6,179 @@ using Harmony;
 using JetBrains.Annotations;
 using RimWorld;
 using Verse;
-using StatDefOf = OutfitManager.DefOfs.StatDefOf;
 
 namespace OutfitManager.Patches
 {
     [HarmonyPatch(typeof(OutfitDatabase), "GenerateStartingOutfits")]
     public static class OutfitDatabaseGenerateStartingOutfitsPatch
     {
+        private static void ConfigureAnythingOutfit(OutfitDatabase db)
+        {
+            ConfigureOutfit(MakeOutfit(db, "Anything", true),
+                new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities));
+        }
+
+        private static void ConfigureArtisanOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "SmithingSpeed", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "TailoringSpeed", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "SmeltingSpeed", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ButcheryMechanoidSpeed",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ButcheryMechanoidEfficiency",
+                OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Artisan"), priorities);
+        }
+
+        private static void ConfigureArtistOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "SculptingSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Artist"), priorities);
+        }
+
+        private static void ConfigureBrawlerOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseSoldierStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AimingDelayFactor", OutfitStatPriority.MajorNegative);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeDPS", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeHitChance", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeDodgeChance", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyTouch", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeWeapon_DamageMultiplier",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeWeapon_CooldownMultiplier",
+                OutfitStatPriority.MajorNegative);
+            ConfigureOutfitSoldier(MakeOutfit(db, "Brawler"), priorities);
+        }
+
+        private static void ConfigureBuilderOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "FixBrokenDownBuildingSuccessChance",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ConstructionSpeed", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ConstructSuccessChance",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "SmoothingSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Builder"), priorities);
+        }
+
+        private static void ConfigureCleanerOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MoveSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Cleaner"), priorities);
+        }
+
+        private static void ConfigureCookOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "DrugCookingSpeed", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ButcheryFleshSpeed",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ButcheryFleshEfficiency",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "CookSpeed", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "FoodPoisonChance", OutfitStatPriority.MajorNegative);
+            ConfigureOutfit(MakeOutfit(db, "Cook"), priorities);
+        }
+
+        private static void ConfigureCrafterOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "SmeltingSpeed", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ButcheryMechanoidSpeed",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ButcheryMechanoidEfficiency",
+                OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Crafter"), priorities);
+        }
+
+        private static void ConfigureDoctorOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MedicalSurgerySuccessChance",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MedicalOperationSpeed",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MedicalTendQuality",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MedicalTendSpeed", OutfitStatPriority.MediumPositive);
+            ConfigureOutfit(MakeOutfit(db, "Doctor"), priorities);
+        }
+
+        private static void ConfigureGrowerOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "PlantHarvestYield", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "PlantWorkSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Grower"), priorities);
+        }
+
+        private static void ConfigureHandlerOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "TrainAnimalChance", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "TameAnimalChance", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeDodgeChance", OutfitStatPriority.MinorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeHitChance", OutfitStatPriority.Neutral);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeDPS", OutfitStatPriority.Neutral);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyTouch", OutfitStatPriority.Neutral);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeWeapon_CooldownMultiplier",
+                OutfitStatPriority.MinorNegative);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeWeapon_DamageMultiplier",
+                OutfitStatPriority.Neutral);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "PainShockThreshold",
+                OutfitStatPriority.MediumPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AnimalGatherYield", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AnimalGatherSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Handler"), priorities);
+        }
+
+        private static void ConfigureHaulerOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "CarryingCapacity", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "CarryWeight", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Hauler"), priorities);
+        }
+
+        private static void ConfigureHunterOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ShootingAccuracyPawn",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyShort", OutfitStatPriority.MediumPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyMedium", OutfitStatPriority.MediumPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyLong", OutfitStatPriority.MediumPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeDPS", OutfitStatPriority.Neutral);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeHitChance", OutfitStatPriority.Neutral);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "RangedWeapon_Cooldown",
+                OutfitStatPriority.MajorNegative);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AimingDelayFactor", OutfitStatPriority.MajorNegative);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "PainShockThreshold",
+                OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Hunter"), priorities);
+        }
+
+        private static void ConfigureMinerOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MiningYield", OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MiningSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Miner"), priorities);
+        }
+
+        private static void ConfigureNudistOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>();
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MoveSpeed", OutfitStatPriority.MediumPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "WorkSpeedGlobal", OutfitStatPriority.MajorPositive);
+            ConfigureOutfitNudist(MakeOutfit(db, "Nudist", true), priorities);
+        }
+
         private static void ConfigureOutfit(ExtendedOutfit outfit, Dictionary<StatDef, float> priorities)
         {
             #if DEBUG
@@ -42,7 +208,8 @@ namespace OutfitManager.Patches
 
         private static void ConfigureOutfitSoldier(ExtendedOutfit outfit, Dictionary<StatDef, float> priorities)
         {
-            ConfigureOutfitTagged(outfit, priorities, "Soldier");
+            //ConfigureOutfitTagged(outfit, priorities, "Soldier");
+            ConfigureOutfit(outfit, priorities);
         }
 
         private static void ConfigureOutfitTagged(ExtendedOutfit outfit, Dictionary<StatDef, float> priorities,
@@ -56,192 +223,97 @@ namespace OutfitManager.Patches
             ConfigureOutfitTagged(outfit, priorities, "Worker");
         }
 
+        private static void ConfigureResearcherOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ResearchSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Researcher"), priorities);
+        }
+
+        private static void ConfigureSmithOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "SmithingSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Smith"), priorities);
+        }
+
+        private static void ConfigureSoldierOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseSoldierStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "ShootingAccuracyPawn",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyShort", OutfitStatPriority.MinorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyMedium", OutfitStatPriority.MinorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AccuracyLong", OutfitStatPriority.MinorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "MeleeDodgeChance", OutfitStatPriority.Neutral);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "AimingDelayFactor", OutfitStatPriority.MajorNegative);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "RangedWeapon_Cooldown",
+                OutfitStatPriority.MajorNegative);
+            ConfigureOutfitSoldier(MakeOutfit(db, "Soldier"), priorities);
+        }
+
+        private static void ConfigureTailorOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "TailoringSpeed", OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Tailor"), priorities);
+        }
+
+        private static void ConfigureWardenOutfit(OutfitDatabase db)
+        {
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "NegotiationAbility",
+                OutfitStatPriority.MajorPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "SocialImpact", OutfitStatPriority.MediumPositive);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "TradePriceImprovement",
+                OutfitStatPriority.MajorPositive);
+            ConfigureOutfit(MakeOutfit(db, "Warden"), priorities);
+        }
+
+        private static void ConfigureWorkerOutfit(OutfitDatabase db)
+        {
+            ConfigureOutfitWorker(MakeOutfit(db, "Worker", true),
+                new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities));
+        }
+
         internal static void GenerateStartingOutfits(OutfitDatabase db, bool vanilla = true)
         {
             #if DEBUG
+            Log.Message("OutfitManager: Discovered stats");
+            foreach (var stat in ExtendedOutfit.AllAvailableStats)
+            {
+                Log.Message($"OutfitManager: {stat.defName} - {stat.LabelCap}");
+            }
             Log.Message("OutfitManager: Generating starting outfits");
             Log.Message($"Vanilla: {vanilla}");
             #endif
             if (vanilla)
             {
-                ConfigureOutfit(MakeOutfit(db, "Anything", true),
-                    new Dictionary<StatDef, float>
-                    {
-                        {StatDefOf.MoveSpeed, Priority.Desired},
-                        {StatDefOf.WorkSpeedGlobal, Priority.Wanted},
-                        {StatDefOf.ArmorRating_Blunt, Priority.Desired},
-                        {StatDefOf.ArmorRating_Sharp, Priority.Desired}
-                    });
-                ConfigureOutfitWorker(MakeOutfit(db, "Worker", true),
-                    new Dictionary<StatDef, float>
-                    {
-                        {StatDefOf.MoveSpeed, Priority.Neutral}, {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                    });
+                ConfigureAnythingOutfit(db);
+                ConfigureWorkerOutfit(db);
             }
-            ConfigureOutfitWorker(MakeOutfit(db, "Doctor"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.MedicalSurgerySuccessChance, Priority.Wanted},
-                    {StatDef.Named("MedicalOperationSpeed"), Priority.Wanted},
-                    {StatDefOf.MedicalTendQuality, Priority.Wanted},
-                    {StatDefOf.MedicalTendSpeed, Priority.Desired},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Warden"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.NegotiationAbility, Priority.Wanted},
-                    {StatDefOf.SocialImpact, Priority.Desired},
-                    {StatDefOf.TradePriceImprovement, Priority.Wanted}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Handler"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.TrainAnimalChance, Priority.Wanted},
-                    {StatDefOf.TameAnimalChance, Priority.Wanted},
-                    {StatDefOf.ArmorRating_Sharp, Priority.Neutral},
-                    {StatDefOf.MeleeDodgeChance, Priority.Desired},
-                    {StatDefOf.MeleeHitChance, Priority.Neutral},
-                    {StatDefOf.MoveSpeed, Priority.Neutral},
-                    {StatDefOf.MeleeDPS, Priority.Neutral},
-                    {StatDefOf.AccuracyTouch, Priority.Neutral},
-                    {StatDefOf.MeleeWeapon_CooldownMultiplier, Priority.Unwanted},
-                    {StatDefOf.MeleeWeapon_DamageMultiplier, Priority.Neutral},
-                    {StatDefOf.PainShockThreshold, Priority.Wanted},
-                    {StatDefOf.AnimalGatherYield, Priority.Wanted},
-                    {StatDefOf.AnimalGatherSpeed, Priority.Wanted}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Cook"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDef.Named("DrugCookingSpeed"), Priority.Wanted},
-                    {StatDef.Named("ButcheryFleshSpeed"), Priority.Wanted},
-                    {StatDef.Named("ButcheryFleshEfficiency"), Priority.Wanted},
-                    {StatDef.Named("CookSpeed"), Priority.Wanted},
-                    {StatDefOf.FoodPoisonChance, Priority.Unwanted},
-                    {StatDefOf.MoveSpeed, Priority.Desired},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitSoldier(MakeOutfit(db, "Hunter"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.ShootingAccuracyPawn, Priority.Wanted},
-                    {StatDefOf.MoveSpeed, Priority.Desired},
-                    {StatDefOf.AccuracyShort, Priority.Desired},
-                    {StatDefOf.AccuracyMedium, Priority.Desired},
-                    {StatDefOf.AccuracyLong, Priority.Desired},
-                    {StatDefOf.MeleeDPS, Priority.Neutral},
-                    {StatDefOf.MeleeHitChance, Priority.Neutral},
-                    {StatDefOf.ArmorRating_Blunt, Priority.Neutral},
-                    {StatDefOf.ArmorRating_Sharp, Priority.Neutral},
-                    {StatDefOf.RangedWeapon_Cooldown, Priority.Unwanted},
-                    {StatDefOf.AimingDelayFactor, Priority.Unwanted},
-                    {StatDefOf.PainShockThreshold, Priority.Wanted}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Builder"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.FixBrokenDownBuildingSuccessChance, Priority.Wanted},
-                    {StatDefOf.ConstructionSpeed, Priority.Wanted},
-                    {StatDefOf.ConstructSuccessChance, Priority.Wanted},
-                    {StatDefOf.SmoothingSpeed, Priority.Wanted},
-                    {StatDefOf.MoveSpeed, Priority.Neutral},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Neutral}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Grower"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.PlantHarvestYield, Priority.Wanted},
-                    {StatDefOf.PlantWorkSpeed, Priority.Wanted},
-                    {StatDefOf.MoveSpeed, Priority.Neutral},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Miner"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.MiningYield, Priority.Wanted},
-                    {StatDefOf.MiningSpeed, Priority.Wanted},
-                    {StatDefOf.MoveSpeed, Priority.Neutral},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Smith"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDef.Named("SmithingSpeed"), Priority.Wanted}, {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Tailor"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDef.Named("TailoringSpeed"), Priority.Wanted},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Artist"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDef.Named("SculptingSpeed"), Priority.Wanted},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Crafter"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDef.Named("SmeltingSpeed"), Priority.Wanted},
-                    {StatDef.Named("ButcheryMechanoidSpeed"), Priority.Wanted},
-                    {StatDef.Named("ButcheryMechanoidEfficiency"), Priority.Wanted},
-                    {StatDefOf.WorkSpeedGlobal, Priority.Wanted}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Hauler"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.MoveSpeed, Priority.Wanted}, {StatDefOf.CarryingCapacity, Priority.Wanted}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Cleaner"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.MoveSpeed, Priority.Wanted}, {StatDefOf.WorkSpeedGlobal, Priority.Wanted}
-                });
-            ConfigureOutfitWorker(MakeOutfit(db, "Researcher"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.ResearchSpeed, Priority.Wanted}, {StatDefOf.WorkSpeedGlobal, Priority.Desired}
-                });
-            ConfigureOutfitSoldier(MakeOutfit(db, "Brawler"),
-                new Dictionary<StatDef, float>
-                {
-                    {StatDefOf.MoveSpeed, Priority.Wanted},
-                    {StatDefOf.AimingDelayFactor, Priority.Unwanted},
-                    {StatDefOf.MeleeDPS, Priority.Wanted},
-                    {StatDefOf.MeleeHitChance, Priority.Wanted},
-                    {StatDefOf.MeleeDodgeChance, Priority.Wanted},
-                    {StatDefOf.ArmorRating_Blunt, Priority.Neutral},
-                    {StatDefOf.ArmorRating_Sharp, Priority.Desired},
-                    {StatDefOf.AccuracyTouch, Priority.Wanted},
-                    {StatDefOf.MeleeWeapon_DamageMultiplier, Priority.Wanted},
-                    {StatDefOf.MeleeWeapon_CooldownMultiplier, Priority.Unwanted},
-                    {StatDefOf.PainShockThreshold, Priority.Wanted}
-                });
+            ConfigureDoctorOutfit(db);
+            ConfigureWardenOutfit(db);
+            ConfigureHandlerOutfit(db);
+            ConfigureCookOutfit(db);
+            ConfigureHunterOutfit(db);
+            ConfigureBuilderOutfit(db);
+            ConfigureGrowerOutfit(db);
+            ConfigureMinerOutfit(db);
+            ConfigureSmithOutfit(db);
+            ConfigureTailorOutfit(db);
+            ConfigureArtistOutfit(db);
+            ConfigureCrafterOutfit(db);
+            ConfigureHaulerOutfit(db);
+            ConfigureCleanerOutfit(db);
+            ConfigureResearcherOutfit(db);
+            ConfigureBrawlerOutfit(db);
             if (vanilla)
             {
-                ConfigureOutfitSoldier(MakeOutfit(db, "Soldier"),
-                    new Dictionary<StatDef, float>
-                    {
-                        {StatDefOf.ShootingAccuracyPawn, Priority.Wanted},
-                        {StatDefOf.AccuracyShort, Priority.Desired},
-                        {StatDefOf.AccuracyMedium, Priority.Desired},
-                        {StatDefOf.AccuracyLong, Priority.Desired},
-                        {StatDefOf.MoveSpeed, Priority.Desired},
-                        {StatDefOf.ArmorRating_Blunt, Priority.Neutral},
-                        {StatDefOf.ArmorRating_Sharp, Priority.Desired},
-                        {StatDefOf.MeleeDodgeChance, Priority.Neutral},
-                        {StatDefOf.AimingDelayFactor, Priority.Unwanted},
-                        {StatDefOf.RangedWeapon_Cooldown, Priority.Unwanted},
-                        {StatDefOf.PainShockThreshold, Priority.Wanted}
-                    });
-                ConfigureOutfitNudist(MakeOutfit(db, "Nudist", true),
-                    new Dictionary<StatDef, float>
-                    {
-                        {StatDefOf.MoveSpeed, Priority.Desired}, {StatDefOf.WorkSpeedGlobal, Priority.Wanted}
-                    });
+                ConfigureSoldierOutfit(db);
+                ConfigureNudistOutfit(db);
             }
+            ConfigureArtisanOutfit(db);
         }
 
         private static ExtendedOutfit MakeOutfit(OutfitDatabase database, string name, bool autoWorkPriorities = false)
@@ -271,7 +343,7 @@ namespace OutfitManager.Patches
             }
             catch (Exception e)
             {
-                Log.Error("Can't generate outfits: " + e);
+                Log.Error("OutfitManager: Could not generate outfits - " + e);
             }
             return false;
         }

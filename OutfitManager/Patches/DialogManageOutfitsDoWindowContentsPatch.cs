@@ -23,7 +23,7 @@ namespace OutfitManager.Patches
         private const float MarginTop = 10f;
         private const float MarginVertical = 10f;
 
-        private const float MaxValue = 2.5f;
+        private const float MaxValue = 5.0f;
 
         private static Vector2 _scrollPosition = Vector2.zero;
 

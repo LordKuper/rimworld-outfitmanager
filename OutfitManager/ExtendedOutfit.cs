@@ -65,7 +65,7 @@ namespace OutfitManager
             Scribe_Deep.Look(ref filter, "filter");
             Scribe_Values.Look(ref TargetTemperaturesOverride, "targetTemperaturesOverride");
             Scribe_Values.Look(ref TargetTemperatures, "targetTemperatures");
-            Scribe_Values.Look(ref PenalizeTaintedApparel, "PenaltyWornByCorpse", true);
+            Scribe_Values.Look(ref PenalizeTaintedApparel, "PenalizeTaintedApparel", true);
             Scribe_Collections.Look(ref _statPriorities, "statPriorities", LookMode.Deep);
             Scribe_Values.Look(ref AutoWorkPriorities, "AutoWorkPriorities");
         }
@@ -78,6 +78,16 @@ namespace OutfitManager
         public void AddStatPriority(StatDef def, float priority, float defaultPriority = float.NaN)
         {
             _statPriorities.Insert(0, new StatPriority(def, priority, defaultPriority));
+        }
+
+        public static StatDef GetStatDefByName([NotNull] string statName)
+        {
+            if (string.IsNullOrEmpty(statName))
+            {
+                throw new ArgumentException("Value cannot be null or empty.", nameof(statName));
+            }
+            return AllAvailableStats.FirstOrDefault(o =>
+                statName.Equals(o.defName, StringComparison.OrdinalIgnoreCase));
         }
 
         public void RemoveStatPriority(StatDef def)

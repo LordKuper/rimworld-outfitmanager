@@ -73,7 +73,7 @@
     <Compile Include="Patches\OutfitDatabaseMakeNewOutfitPatch.cs" />
     <Compile Include="Patches\OutfitDatabaseGenerateStartingOutfitsPatch.cs" />
     <Compile Include="Patches\PlaySettingsDoPlaySettingsGlobalControlsPatch.cs" />
-    <Compile Include="Priority.cs" />
+    <Compile Include="OutfitStatPriority.cs" />
     <Compile Include="Patches\ThingDrawGuiOverlayPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceBank.cs" />
