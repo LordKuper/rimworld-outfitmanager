@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Harmony;
@@ -23,15 +24,19 @@ namespace OutfitManager
 
         private static readonly SimpleCurve InsulationFactorCurve = new SimpleCurve
         {
-            new CurvePoint(-20f, -3f), new CurvePoint(-10f, -2f), new CurvePoint(10f, 2f), new CurvePoint(20f, 3f)
+            new CurvePoint(-20f, -1f),
+            new CurvePoint(-10f, -0.5f),
+            new CurvePoint(10f, 0.5f),
+            new CurvePoint(20f, 1f)
         };
 
         private static readonly SimpleCurve InsulationTemperatureScoreFactorCurveNeed = new SimpleCurve
         {
-            new CurvePoint(0f, 1f), new CurvePoint(30f, 4f)
+            new CurvePoint(0f, 0f), new CurvePoint(30f, 1f)
         };
 
         internal static bool ShowApparelScores;
+        private static readonly Dictionary<StatDef, FloatRange> StatRanges = new Dictionary<StatDef, FloatRange>();
 
         static OutfitManagerMod()
         {
@@ -54,7 +59,7 @@ namespace OutfitManager
             #if DEBUG
             foreach (var stat in stats)
             {
-                Log.Message($"OutfitManager: Score of stat {stat.label}[{stat.weight}] = {stat.value}", true);
+                Log.Message($"OutfitManager: Score of stat {stat.label} [{stat.weight}] = {stat.value}", true);
             }
             Log.Message($"OutfitManager: Sum of scores for auto work priorities = {statSum}", true);
             #endif
@@ -78,7 +83,27 @@ namespace OutfitManager
                 return 0f;
             }
             #if DEBUG
-            Log.Message($"OutfitManager: Calculating score of {apparel.Label} for pawn {pawn.Name}", true);
+            Log.Message($"OutfitManager: StatBases of '{apparel.def.defName}' ({apparel.Label}) -----", true);
+            if (apparel.def.statBases != null)
+            {
+                foreach (var statBase in apparel.def.statBases)
+                {
+                    Log.Message(
+                        $"OutfitManager: {statBase.stat.defName} = {statBase.value} (default = {statBase.stat.defaultBaseValue})",
+                        true);
+                }
+            }
+            Log.Message("OutfitManager: ------------------------------------------------------------", true);
+            Log.Message($"OutfitManager: EquippedStatOffsets of '{apparel.def.defName}' ({apparel.Label}) -----", true);
+            if (apparel.def.equippedStatOffsets != null)
+            {
+                foreach (var statModifier in apparel.def.equippedStatOffsets)
+                {
+                    Log.Message($"OutfitManager: {statModifier.stat.defName} = {statModifier.value}", true);
+                }
+            }
+            Log.Message("OutfitManager: ------------------------------------------------------------", true);
+            Log.Message($"OutfitManager: Calculating score of '{apparel.Label}' for pawn '{pawn.Name}'", true);
             #endif
             var score = ApparelScoreRawPriorities(apparel, outfit);
             if (outfit.AutoWorkPriorities)
@@ -134,7 +159,7 @@ namespace OutfitManager
                 }
             }
             #if DEBUG
-            Log.Message($"OutfitManager: Total score of {apparel.Label} for pawn {pawn.Name} = {score}", true);
+            Log.Message($"OutfitManager: Total score of '{apparel.Label}' for pawn '{pawn.Name}' = {score}", true);
             #endif
             return score;
         }
@@ -222,7 +247,7 @@ namespace OutfitManager
                 }
                 else
                 {
-                    insulation = 1f;
+                    insulation = 0f;
                 }
             }
             #if DEBUG
@@ -239,23 +264,73 @@ namespace OutfitManager
             }
             var stats = outfit.StatPriorities.Select(sp => new
             {
-                sp.Stat.label,
+                name = sp.Stat.defName,
                 weight = sp.Weight,
-                value = apparel.def.equippedStatOffsets.GetStatOffsetFromList(sp.Stat) +
-                        apparel.GetStatValue(sp.Stat),
-                defaultValue = sp.Stat.defaultBaseValue
+                defaultValue = sp.Stat.defaultBaseValue,
+                baseValue = apparel.GetStatValue(sp.Stat),
+                offset = apparel.def.equippedStatOffsets.GetStatOffsetFromList(sp.Stat),
+                offsettedValue =
+                    apparel.GetStatValue(sp.Stat) + apparel.def.equippedStatOffsets.GetStatOffsetFromList(sp.Stat),
+                normalizedValue =
+                    NormalizeStatValue(sp.Stat,
+                        apparel.GetStatValue(sp.Stat) +
+                        apparel.def.equippedStatOffsets.GetStatOffsetFromList(sp.Stat)),
+                score = NormalizeStatValue(sp.Stat,
+                            apparel.GetStatValue(sp.Stat) +
+                            apparel.def.equippedStatOffsets.GetStatOffsetFromList(sp.Stat)) * sp.Weight
             }).ToList();
-            var averageScore = stats.Average(sp =>
-                (Math.Abs(sp.defaultValue) < 0.001f ? sp.value : (sp.value - sp.defaultValue) / sp.defaultValue) *
-                Mathf.Pow(sp.weight, 3));
+            var score = stats.Sum(sp => sp.score);
             #if DEBUG
             foreach (var stat in stats)
             {
-                Log.Message($"OutfitManager: Score of stat {stat.label} = {stat.value}", true);
+                Log.Message(
+                    $"OutfitManager: Value of stat {stat.name} [{stat.weight}] = {stat.offsettedValue} ({stat.normalizedValue} norm) ({stat.defaultValue} def) ({stat.score} score)",
+                    true);
             }
-            Log.Message($"OutfitManager: Average stat score of {apparel.Label} = {averageScore}", true);
+            Log.Message($"OutfitManager: Stat score of {apparel.Label} = {score}", true);
             #endif
-            return averageScore;
+            return score;
+        }
+
+        private static FloatRange CalculateStatRange(StatDef stat)
+        {
+            var statRange = FloatRange.Zero;
+            var apparelFilter = new ThingFilter();
+            apparelFilter.SetAllow(ThingCategoryDefOf.Apparel, true);
+            var apparels = ThingCategoryNodeDatabase.RootNode.catDef.DescendantThingDefs
+                .Where(t => apparelFilter.Allows(t) && !apparelFilter.IsAlwaysDisallowedDueToSpecialFilters(t)).ToList()
+                .Where(a => a.statBases != null && a.statBases.Any(b => b.stat == stat) ||
+                            a.equippedStatOffsets != null && a.equippedStatOffsets.Any(o => o.stat == stat)).ToList();
+            foreach (var apparel in apparels)
+            {
+                var statBase = apparel.statBases?.FirstOrDefault(sm => sm.stat == stat);
+                var baseStatValue = statBase?.value ?? stat.defaultBaseValue;
+                float statOffsetValue = 0;
+                var statOffset = apparel.equippedStatOffsets?.FirstOrDefault(sm => sm.stat == stat);
+                if (statOffset != null)
+                {
+                    statOffsetValue = statOffset.value;
+                }
+                var totalStatValue = baseStatValue + statOffsetValue;
+                if (Math.Abs(statRange.min) < 0.0001 && Math.Abs(statRange.max) < 0.0001)
+                {
+                    statRange.min = totalStatValue;
+                    statRange.max = totalStatValue;
+                }
+                else
+                {
+                    if (statRange.min > totalStatValue)
+                    {
+                        statRange.min = totalStatValue;
+                    }
+                    if (statRange.max < totalStatValue)
+                    {
+                        statRange.max = totalStatValue;
+                    }
+                }
+            }
+            StatRanges.Add(stat, statRange);
+            return statRange;
         }
 
         private static FloatRange GetInsulationStats(Thing apparel)
@@ -263,6 +338,34 @@ namespace OutfitManager
             var insulationCold = apparel.GetStatValue(StatDefOf.Insulation_Cold);
             var insulationHeat = apparel.GetStatValue(StatDefOf.Insulation_Heat);
             return new FloatRange(-insulationCold, insulationHeat);
+        }
+
+        private static float NormalizeStatValue(StatDef stat, float value)
+        {
+            var statRange = StatRanges.ContainsKey(stat) ? StatRanges[stat] : CalculateStatRange(stat);
+            if (Math.Abs(statRange.min - statRange.max) < 0.0001)
+            {
+                statRange.min = value;
+                statRange.max = value;
+                return 0f;
+            }
+            if (statRange.min > value)
+            {
+                statRange.min = value;
+            }
+            if (statRange.max < value)
+            {
+                statRange.max = value;
+            }
+            if (statRange.min < 0 && statRange.max < 0)
+            {
+                return -1 + (value - statRange.min) / (statRange.max - statRange.min);
+            }
+            if (statRange.min < 0 && statRange.max > 0)
+            {
+                return -1 + 2 * ((value - statRange.min) / (statRange.max - statRange.min));
+            }
+            return (value - statRange.min) / (statRange.max - statRange.min);
         }
     }
 }

@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assemblies", "Assemblies", 
 	ProjectSection(SolutionItems) = preProject
 		..\Assemblies\0Harmony.dll = ..\Assemblies\0Harmony.dll
 		..\Assemblies\0MultiplayerAPI.dll = ..\Assemblies\0MultiplayerAPI.dll
+		..\Assemblies\OutfitManager.dll = ..\Assemblies\OutfitManager.dll
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Textures", "Textures", "{E5210F3F-70E2-4115-A47F-4445A9C6D282}"

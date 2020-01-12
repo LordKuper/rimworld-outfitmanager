@@ -272,20 +272,15 @@ namespace OutfitManager.Patches
 
         private static void ConfigureWorkerOutfit(OutfitDatabase db)
         {
-            ConfigureOutfitWorker(MakeOutfit(db, "Worker", true),
-                new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities));
+            var priorities = new Dictionary<StatDef, float>(OutfitStatPriority.BaseWorkerStatPriorities);
+            OutfitStatPriority.ConfigureStatPriority(priorities, "WorkSpeedGlobal", OutfitStatPriority.MajorPositive);
+            ConfigureOutfitWorker(MakeOutfit(db, "Worker", true), priorities);
         }
 
         internal static void GenerateStartingOutfits(OutfitDatabase db, bool vanilla = true)
         {
             #if DEBUG
-            Log.Message("OutfitManager: Discovered stats");
-            foreach (var stat in ExtendedOutfit.AllAvailableStats)
-            {
-                Log.Message($"OutfitManager: {stat.defName} - {stat.LabelCap}");
-            }
             Log.Message("OutfitManager: Generating starting outfits");
-            Log.Message($"Vanilla: {vanilla}");
             #endif
             if (vanilla)
             {
