@@ -36,7 +36,7 @@ namespace OutfitManager
         };
 
         internal static bool ShowApparelScores;
-        private static readonly Dictionary<StatDef, FloatRange> StatRanges = new Dictionary<StatDef, FloatRange>();
+        private static readonly Dictionary<string, FloatRange> StatRanges = new Dictionary<string, FloatRange>();
 
         static OutfitManagerMod()
         {
@@ -283,8 +283,9 @@ namespace OutfitManager
             #if DEBUG
             foreach (var stat in stats)
             {
+                var statRange = StatRanges[stat.name];
                 Log.Message(
-                    $"OutfitManager: Value of stat {stat.name} [{stat.weight}] = {stat.offsettedValue} ({stat.normalizedValue} norm) ({stat.defaultValue} def) ({stat.score} score)",
+                    $"OutfitManager: Value of stat {stat.name} ({stat.weight}) [{statRange.min},{statRange.max}] = {stat.offsettedValue} ({stat.normalizedValue} norm) ({stat.defaultValue} def) ({stat.score} score)",
                     true);
             }
             Log.Message($"OutfitManager: Stat score of {apparel.Label} = {score}", true);
@@ -299,37 +300,45 @@ namespace OutfitManager
             apparelFilter.SetAllow(ThingCategoryDefOf.Apparel, true);
             var apparels = ThingCategoryNodeDatabase.RootNode.catDef.DescendantThingDefs
                 .Where(t => apparelFilter.Allows(t) && !apparelFilter.IsAlwaysDisallowedDueToSpecialFilters(t)).ToList()
-                .Where(a => a.statBases != null && a.statBases.Any(b => b.stat == stat) ||
+                .Where(a => a.statBases != null && a.StatBaseDefined(stat) ||
                             a.equippedStatOffsets != null && a.equippedStatOffsets.Any(o => o.stat == stat)).ToList();
-            foreach (var apparel in apparels)
+            if (apparels.Any())
             {
-                var statBase = apparel.statBases?.FirstOrDefault(sm => sm.stat == stat);
-                var baseStatValue = statBase?.value ?? stat.defaultBaseValue;
-                float statOffsetValue = 0;
-                var statOffset = apparel.equippedStatOffsets?.FirstOrDefault(sm => sm.stat == stat);
-                if (statOffset != null)
+                foreach (var apparel in apparels)
                 {
-                    statOffsetValue = statOffset.value;
-                }
-                var totalStatValue = baseStatValue + statOffsetValue;
-                if (Math.Abs(statRange.min) < 0.0001 && Math.Abs(statRange.max) < 0.0001)
-                {
-                    statRange.min = totalStatValue;
-                    statRange.max = totalStatValue;
-                }
-                else
-                {
-                    if (statRange.min > totalStatValue)
+                    var statBase = apparel.statBases?.FirstOrDefault(sm => sm.stat == stat);
+                    var baseStatValue = statBase?.value ?? stat.defaultBaseValue;
+                    float statOffsetValue = 0;
+                    var statOffset = apparel.equippedStatOffsets?.FirstOrDefault(sm => sm.stat == stat);
+                    if (statOffset != null)
+                    {
+                        statOffsetValue = statOffset.value;
+                    }
+                    var totalStatValue = baseStatValue + statOffsetValue - stat.defaultBaseValue;
+                    if (Math.Abs(statRange.min) < 0.0001 && Math.Abs(statRange.max) < 0.0001)
                     {
                         statRange.min = totalStatValue;
-                    }
-                    if (statRange.max < totalStatValue)
-                    {
                         statRange.max = totalStatValue;
+                    }
+                    else
+                    {
+                        if (statRange.min > totalStatValue)
+                        {
+                            statRange.min = totalStatValue;
+                        }
+                        if (statRange.max < totalStatValue)
+                        {
+                            statRange.max = totalStatValue;
+                        }
                     }
                 }
             }
-            StatRanges.Add(stat, statRange);
+            else
+            {
+                statRange.min = stat.defaultBaseValue;
+                statRange.max = stat.defaultBaseValue;
+            }
+            StatRanges.Add(stat.defName, statRange);
             return statRange;
         }
 
@@ -342,30 +351,35 @@ namespace OutfitManager
 
         private static float NormalizeStatValue(StatDef stat, float value)
         {
-            var statRange = StatRanges.ContainsKey(stat) ? StatRanges[stat] : CalculateStatRange(stat);
+            var statRange = StatRanges.ContainsKey(stat.defName) ? StatRanges[stat.defName] : CalculateStatRange(stat);
+            var valueDeviation = value - stat.defaultBaseValue;
             if (Math.Abs(statRange.min - statRange.max) < 0.0001)
             {
-                statRange.min = value;
-                statRange.max = value;
+                statRange.min = valueDeviation;
+                statRange.max = valueDeviation;
                 return 0f;
             }
-            if (statRange.min > value)
+            if (statRange.min > valueDeviation)
             {
-                statRange.min = value;
+                statRange.min = valueDeviation;
             }
-            if (statRange.max < value)
+            if (statRange.max < valueDeviation)
             {
-                statRange.max = value;
+                statRange.max = valueDeviation;
+            }
+            if (Math.Abs(valueDeviation) < 0.0001)
+            {
+                return 0;
             }
             if (statRange.min < 0 && statRange.max < 0)
             {
-                return -1 + (value - statRange.min) / (statRange.max - statRange.min);
+                return -1 + (valueDeviation - statRange.min) / (statRange.max - statRange.min);
             }
             if (statRange.min < 0 && statRange.max > 0)
             {
-                return -1 + 2 * ((value - statRange.min) / (statRange.max - statRange.min));
+                return -1 + 2 * ((valueDeviation - statRange.min) / (statRange.max - statRange.min));
             }
-            return (value - statRange.min) / (statRange.max - statRange.min);
+            return (valueDeviation - statRange.min) / (statRange.max - statRange.min);
         }
     }
 }
