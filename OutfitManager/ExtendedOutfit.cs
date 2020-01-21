@@ -5,28 +5,11 @@ using System.Linq;
 using JetBrains.Annotations;
 using RimWorld;
 using Verse;
-using StatDefOf = OutfitManager.DefOfs.StatDefOf;
 
 namespace OutfitManager
 {
     public class ExtendedOutfit : Outfit, IExposable
     {
-        private static readonly IEnumerable<StatCategoryDef> BlacklistedCategories = new List<StatCategoryDef>
-        {
-            StatCategoryDefOf.BasicsNonPawn, StatCategoryDefOf.Building, StatCategoryDefOf.StuffStatFactors
-        };
-
-        private static readonly IEnumerable<StatDef> BlacklistedStats = new List<StatDef>
-        {
-            StatDefOf.ComfyTemperatureMin,
-            StatDefOf.ComfyTemperatureMax,
-            StatDefOf.Insulation_Cold,
-            StatDefOf.Insulation_Heat,
-            StatDefOf.StuffEffectMultiplierInsulation_Cold,
-            StatDefOf.StuffEffectMultiplierInsulation_Heat,
-            StatDefOf.StuffEffectMultiplierArmor
-        };
-
         private List<StatPriority> _statPriorities = new List<StatPriority>();
 
         internal bool AutoWorkPriorities;
@@ -50,13 +33,10 @@ namespace OutfitManager
 
         public ExtendedOutfit() { }
 
-        internal static IEnumerable<StatDef> AllAvailableStats =>
-            DefDatabase<StatDef>.AllDefs.Where(i => !BlacklistedCategories.Contains(i.category))
-                .Except(BlacklistedStats).ToList();
-
         public IEnumerable<StatPriority> StatPriorities => _statPriorities;
 
-        public IEnumerable<StatDef> UnassignedStats => AllAvailableStats.Except(StatPriorities.Select(i => i.Stat));
+        public IEnumerable<StatDef> UnassignedStats =>
+            OutfitStatHelper.AllAvailableStats.Except(StatPriorities.Select(i => i.Stat));
 
         public new void ExposeData()
         {
@@ -78,16 +58,6 @@ namespace OutfitManager
         public void AddStatPriority(StatDef def, float priority, float defaultPriority = float.NaN)
         {
             _statPriorities.Insert(0, new StatPriority(def, priority, defaultPriority));
-        }
-
-        public static StatDef GetStatDefByName([NotNull] string statName)
-        {
-            if (string.IsNullOrEmpty(statName))
-            {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(statName));
-            }
-            return AllAvailableStats.FirstOrDefault(o =>
-                statName.Equals(o.defName, StringComparison.OrdinalIgnoreCase));
         }
 
         public void RemoveStatPriority(StatDef def)

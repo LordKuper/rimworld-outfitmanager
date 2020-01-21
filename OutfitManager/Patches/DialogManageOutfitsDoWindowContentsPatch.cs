@@ -23,8 +23,6 @@ namespace OutfitManager.Patches
         private const float MarginTop = 10f;
         private const float MarginVertical = 10f;
 
-        private const float MaxValue = 2.5f;
-
         private static Vector2 _scrollPosition = Vector2.zero;
 
         private static readonly FloatRange MinMaxTemperatureRange = new FloatRange(-100, 100);
@@ -90,9 +88,11 @@ namespace OutfitManager.Patches
                 Text.Font = GameFont.Tiny;
                 GUI.color = Color.grey;
                 Text.Anchor = TextAnchor.LowerLeft;
-                Verse.Widgets.Label(legendRect, "-" + MaxValue.ToString("N1", CultureInfo.InvariantCulture));
+                Verse.Widgets.Label(legendRect,
+                    "-" + StatPriorityHelper.MaxStatWeight.ToString("N1", CultureInfo.InvariantCulture));
                 Text.Anchor = TextAnchor.LowerRight;
-                Verse.Widgets.Label(legendRect, MaxValue.ToString("N1", CultureInfo.InvariantCulture));
+                Verse.Widgets.Label(legendRect,
+                    StatPriorityHelper.MaxStatWeight.ToString("N1", CultureInfo.InvariantCulture));
                 Text.Anchor = TextAnchor.UpperLeft;
                 Text.Font = GameFont.Small;
                 GUI.color = Color.white;
@@ -186,7 +186,8 @@ namespace OutfitManager.Patches
 
             // draw slider
             GUI.color = AssignmentColor(statPriority);
-            var weight = GUI.HorizontalSlider(sliderRect, statPriority.Weight, -MaxValue, MaxValue);
+            var weight = GUI.HorizontalSlider(sliderRect, statPriority.Weight, -StatPriorityHelper.MaxStatWeight,
+                StatPriorityHelper.MaxStatWeight);
             if (Mathf.Abs(weight - statPriority.Weight) > 1e-4)
             {
                 statPriority.Weight = weight;

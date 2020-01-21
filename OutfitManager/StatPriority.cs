@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using RimWorld;
 using Verse;
@@ -18,6 +19,14 @@ namespace OutfitManager
         public StatPriority(StatDef stat, float weight, float defaultWeight = float.NaN)
         {
             _stat = stat;
+            Weight = weight;
+            Default = defaultWeight;
+        }
+
+        public StatPriority(string statName, float weight, float defaultWeight = float.NaN)
+        {
+            var stat = OutfitStatHelper.GetStatDefByName(statName);
+            _stat = stat ?? throw new ArgumentException("Incorrect stat name", nameof(statName));
             Weight = weight;
             Default = defaultWeight;
         }

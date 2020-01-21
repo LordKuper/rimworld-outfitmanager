@@ -62,24 +62,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefOfs\StatDefOf.cs" />
-    <Compile Include="DefOfs\WorkTypeDefOf.cs" />
     <Compile Include="ExtendedOutfit.cs" />
     <Compile Include="Multiplayer.cs" />
     <Compile Include="OutfitManagerMod.cs" />
+    <Compile Include="OutfitStatHelper.cs" />
     <Compile Include="Patches\DialogManageOutfitsDoWindowContentsPatch.cs" />
     <Compile Include="Patches\JobGiverOptimizeApparelApparelScoreRawPatch.cs" />
     <Compile Include="Patches\OutfitDatabaseExposeDataPatch.cs" />
     <Compile Include="Patches\OutfitDatabaseMakeNewOutfitPatch.cs" />
     <Compile Include="Patches\OutfitDatabaseGenerateStartingOutfitsPatch.cs" />
     <Compile Include="Patches\PlaySettingsDoPlaySettingsGlobalControlsPatch.cs" />
-    <Compile Include="OutfitStatPriority.cs" />
     <Compile Include="Patches\ThingDrawGuiOverlayPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceBank.cs" />
     <Compile Include="StatPriority.cs" />
+    <Compile Include="StatPriorityHelper.cs" />
     <Compile Include="Widgets\Widgets_FloatRange.cs" />
     <Compile Include="WorkPriorities.cs" />
+    <Compile Include="WorktypePriorities.cs" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
@@ -95,6 +95,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

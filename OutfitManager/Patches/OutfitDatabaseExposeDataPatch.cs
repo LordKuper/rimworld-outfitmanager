@@ -5,7 +5,6 @@ using Harmony;
 using JetBrains.Annotations;
 using RimWorld;
 using Verse;
-using StatDefOf = OutfitManager.DefOfs.StatDefOf;
 
 namespace OutfitManager.Patches
 {
@@ -38,44 +37,15 @@ namespace OutfitManager.Patches
             var newOutfit = new ExtendedOutfit(outfit);
             switch (newOutfit.label)
             {
-                default:
-                    newOutfit.AddStatPriorities(new List<StatPriority>
-                    {
-                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MajorPositive),
-                        new StatPriority(StatDefOf.ArmorRating_Blunt, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.ArmorRating_Sharp, OutfitStatPriority.MinorPositive)
-                    });
-                    break;
                 case "Worker":
-                    newOutfit.AddStatPriorities(new List<StatPriority>
-                    {
-                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.Neutral),
-                        new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MinorPositive)
-                    });
+                case "Nudist":
+                    newOutfit.AddStatPriorities(StatPriorityHelper.BaseWorkerStatPriorities);
                     break;
                 case "Soldier":
-                    newOutfit.AddStatPriorities(new List<StatPriority>
-                    {
-                        new StatPriority(StatDefOf.ShootingAccuracyPawn, OutfitStatPriority.MajorPositive),
-                        new StatPriority(StatDefOf.AccuracyShort, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.AccuracyMedium, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.AccuracyLong, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.ArmorRating_Blunt, OutfitStatPriority.Neutral),
-                        new StatPriority(StatDefOf.ArmorRating_Sharp, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.MeleeDodgeChance, OutfitStatPriority.Neutral),
-                        new StatPriority(StatDefOf.AimingDelayFactor, OutfitStatPriority.MajorNegative),
-                        new StatPriority(StatDefOf.RangedWeapon_Cooldown, OutfitStatPriority.MajorNegative),
-                        new StatPriority(StatDefOf.PainShockThreshold, OutfitStatPriority.MajorPositive)
-                    });
+                    newOutfit.AddStatPriorities(StatPriorityHelper.SoldierStatPriorities);
                     break;
-                case "Nudist":
-                    newOutfit.AddStatPriorities(new List<StatPriority>
-                    {
-                        new StatPriority(StatDefOf.MoveSpeed, OutfitStatPriority.MinorPositive),
-                        new StatPriority(StatDefOf.WorkSpeedGlobal, OutfitStatPriority.MajorPositive)
-                    });
+                default:
+                    newOutfit.AddStatPriorities(StatPriorityHelper.VanillaStatPriorities);
                     break;
             }
             return newOutfit;
