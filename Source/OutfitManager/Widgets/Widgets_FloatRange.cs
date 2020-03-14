@@ -20,10 +20,7 @@ namespace OutfitManager.Widgets
             var mainColor = GUI.color;
             GUI.color = new Color(0.4f, 0.4f, 0.4f);
             var text = range.min.ToStringByStyle(valueStyle) + " - " + range.max.ToStringByStyle(valueStyle);
-            if (labelKey != null)
-            {
-                text = labelKey.Translate(text);
-            }
+            if (labelKey != null) { text = labelKey.Translate(text); }
             Text.Font = GameFont.Tiny;
             var labelRect = new Rect(canvas.x, canvas.y, canvas.width, 19f);
             Text.Anchor = TextAnchor.UpperCenter;
@@ -57,14 +54,8 @@ namespace OutfitManager.Widgets
                 {
                     _draggingId = id;
                     var x = Event.current.mousePosition.x;
-                    if (x < minHandleRect.xMax)
-                    {
-                        _draggingHandle = Handle.Min;
-                    }
-                    else if (x > maxHandleRect.xMin)
-                    {
-                        _draggingHandle = Handle.Max;
-                    }
+                    if (x < minHandleRect.xMax) { _draggingHandle = Handle.Min; }
+                    else if (x > maxHandleRect.xMin) { _draggingHandle = Handle.Max; }
                     else
                     {
                         var distToMin = Mathf.Abs(x - minHandleRect.xMax);
@@ -83,18 +74,12 @@ namespace OutfitManager.Widgets
                     if (_draggingHandle == Handle.Min)
                     {
                         range.min = curPosValue;
-                        if (range.max < range.min)
-                        {
-                            range.max = range.min;
-                        }
+                        if (range.max < range.min) { range.max = range.min; }
                     }
                     else if (_draggingHandle == Handle.Max)
                     {
                         range.max = curPosValue;
-                        if (range.min > range.max)
-                        {
-                            range.min = range.max;
-                        }
+                        if (range.min > range.max) { range.min = range.max; }
                     }
                     Event.current.Use();
                 }

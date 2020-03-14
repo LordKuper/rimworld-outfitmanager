@@ -25,58 +25,58 @@ namespace OutfitManager
             switch (worktype)
             {
                 case "Art":
-                    stats.AddRange(StatPriorityHelper.ArtWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.ArtWorkTypeStatPriorities);
                     break;
                 case "BasicWorker":
-                    stats.AddRange(StatPriorityHelper.BaseWorkerStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.BaseWorkerStatPriorities);
                     break;
                 case "Cleaning":
-                    stats.AddRange(StatPriorityHelper.CleaningWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.CleaningWorkTypeStatPriorities);
                     break;
                 case "Cooking":
-                    stats.AddRange(StatPriorityHelper.CookingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.CookingWorkTypeStatPriorities);
                     break;
                 case "Construction":
-                    stats.AddRange(StatPriorityHelper.ConstructionWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.ConstructionWorkTypeStatPriorities);
                     break;
                 case "Crafting":
-                    stats.AddRange(StatPriorityHelper.CraftingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.CraftingWorkTypeStatPriorities);
                     break;
                 case "Doctor":
-                    stats.AddRange(StatPriorityHelper.DoctorWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.DoctorWorkTypeStatPriorities);
                     break;
                 case "Firefighter":
-                    stats.AddRange(StatPriorityHelper.FirefighterWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.FirefighterWorkTypeStatPriorities);
                     break;
                 case "Growing":
-                    stats.AddRange(StatPriorityHelper.GrowingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.GrowingWorkTypeStatPriorities);
                     break;
                 case "Handling":
-                    stats.AddRange(StatPriorityHelper.HandlingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.HandlingWorkTypeStatPriorities);
                     break;
                 case "Hauling":
-                    stats.AddRange(StatPriorityHelper.HaulingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.HaulingWorkTypeStatPriorities);
                     break;
                 case "Hunting":
-                    stats.AddRange(StatPriorityHelper.HuntingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.HuntingWorkTypeStatPriorities);
                     break;
                 case "Mining":
-                    stats.AddRange(StatPriorityHelper.MiningWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.MiningWorkTypeStatPriorities);
                     break;
                 case "PlantCutting":
-                    stats.AddRange(StatPriorityHelper.PlantCuttingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.PlantCuttingWorkTypeStatPriorities);
                     break;
                 case "Research":
-                    stats.AddRange(StatPriorityHelper.ResearchWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.ResearchWorkTypeStatPriorities);
                     break;
                 case "Smithing":
-                    stats.AddRange(StatPriorityHelper.SmithingWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.SmithingWorkTypeStatPriorities);
                     break;
                 case "Tailoring":
-                    stats.AddRange(StatPriorityHelper.TailoringWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.TailoringWorkTypeStatPriorities);
                     break;
                 case "Warden":
-                    stats.AddRange(StatPriorityHelper.WardenWorkTypeStatPriorities);
+                    stats.AddRange(DefaultWorkTypePriorities.WardenWorkTypeStatPriorities);
                     break;
             }
             return stats;
@@ -91,10 +91,7 @@ namespace OutfitManager
         public override void FinalizeInit()
         {
             base.FinalizeInit();
-            if (!_worktypePriorities.NullOrEmpty())
-            {
-                return;
-            }
+            if (!_worktypePriorities.NullOrEmpty()) { return; }
             _worktypePriorities = new List<WorktypePriorities>();
             foreach (var worktype in DefDatabase<WorkTypeDef>.AllDefsListForReading)
             {
@@ -104,10 +101,7 @@ namespace OutfitManager
 
         private static IEnumerable<StatPriority> GetWorkTypeStatPriorities([NotNull] WorkTypeDef worktype)
         {
-            if (worktype == null)
-            {
-                throw new ArgumentNullException(nameof(worktype));
-            }
+            if (worktype == null) { throw new ArgumentNullException(nameof(worktype)); }
             var worktypePriorities = _worktypePriorities.Find(wp => wp.Worktype == worktype);
             if (worktypePriorities == null)
             {
@@ -119,10 +113,7 @@ namespace OutfitManager
 
         public static IEnumerable<StatPriority> GetWorkTypeStatPrioritiesForPawn([NotNull] Pawn pawn)
         {
-            if (pawn == null)
-            {
-                throw new ArgumentNullException(nameof(pawn));
-            }
+            if (pawn == null) { throw new ArgumentNullException(nameof(pawn)); }
             var statPriorities = new List<StatPriority>();
             var workTypes = DefDatabase<WorkTypeDef>.AllDefsListForReading;
             var workTypePriorities = new Dictionary<string, int>();
@@ -130,17 +121,11 @@ namespace OutfitManager
             foreach (var workType in workTypes)
             {
                 var priority = pawn.workSettings?.GetPriority(workType) ?? 0;
-                if (priority <= 0)
-                {
-                    continue;
-                }
+                if (priority <= 0) { continue; }
                 workTypePriorities.Add(workType.defName, priority);
                 workTypeWeights.Add(workType.defName, GetWorkTypeStatPriorities(workType));
             }
-            if (!workTypePriorities.Any())
-            {
-                return new List<StatPriority>();
-            }
+            if (!workTypePriorities.Any()) { return new List<StatPriority>(); }
             var priorityRange =
                 new IntRange(workTypePriorities.Min(s => s.Value), workTypePriorities.Max(s => s.Value));
             #if DEBUG
@@ -154,7 +139,7 @@ namespace OutfitManager
                 var normalizedWorkPriority = priorityRange.min == priorityRange.max
                     ? 1f
                     : 1f - (float) (workTypePriority.Value - priorityRange.min) /
-                      (priorityRange.max + 1 - priorityRange.min);
+                    (priorityRange.max + 1 - priorityRange.min);
                 #if DEBUG
                 Log.Message(
                     $"OutfitManager: {workTypePriority.Key} = {workTypePriority.Value} ({normalizedWorkPriority} norm)",
@@ -166,14 +151,11 @@ namespace OutfitManager
                         o.Stat.defName.Equals(workTypeStatPriority.Stat.defName, StringComparison.OrdinalIgnoreCase));
                     if (statPriority == null)
                     {
-                        statPriority = new StatPriority(workTypeStatPriority.Stat.defName,
+                        statPriority = new StatPriority(workTypeStatPriority.Stat,
                             workTypeStatPriority.Weight * normalizedWorkPriority);
                         statPriorities.Add(statPriority);
                     }
-                    else
-                    {
-                        statPriority.Weight += workTypeStatPriority.Weight * normalizedWorkPriority;
-                    }
+                    else { statPriority.Weight += workTypeStatPriority.Weight * normalizedWorkPriority; }
                 }
             }
             #if DEBUG

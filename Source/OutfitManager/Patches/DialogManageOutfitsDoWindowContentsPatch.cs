@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using JetBrains.Annotations;
-using Multiplayer.API;
-using OutfitManager.Widgets;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -24,8 +22,6 @@ namespace OutfitManager.Patches
         private const float MarginVertical = 10f;
 
         private static Vector2 _scrollPosition = Vector2.zero;
-
-        private static readonly FloatRange MinMaxTemperatureRange = new FloatRange(-100, 100);
 
         private static Color AssignmentColor(StatPriority statPriority)
         {
@@ -52,8 +48,7 @@ namespace OutfitManager.Patches
                 foreach (var def in selectedOutfit.UnassignedStats.OrderBy(i => i.label)
                     .ThenBy(i => i.category.displayOrder))
                 {
-                    var option = new FloatMenuOption(def.LabelCap,
-                        delegate { selectedOutfit.AddStatPriority(def, 0f); });
+                    var option = new FloatMenuOption(def.LabelCap, delegate { selectedOutfit.AddStatPriority(def); });
                     options.Add(option);
                 }
                 Find.WindowStack.Add(new FloatMenu(options));
@@ -72,10 +67,7 @@ namespace OutfitManager.Patches
             // main content in scrolling view
             var contentRect = new Rect(cur.x, cur.y, canvas.width, canvas.height - cur.y);
             var viewRect = new Rect(contentRect) {height = 30f * stats.Count};
-            if (viewRect.height > contentRect.height)
-            {
-                viewRect.width -= 20f;
-            }
+            if (viewRect.height > contentRect.height) { viewRect.width -= 20f; }
             Verse.Widgets.BeginScrollView(contentRect, ref _scrollPosition, viewRect);
             GUI.BeginGroup(viewRect);
             cur = Vector2.zero;
@@ -89,20 +81,17 @@ namespace OutfitManager.Patches
                 GUI.color = Color.grey;
                 Text.Anchor = TextAnchor.LowerLeft;
                 Verse.Widgets.Label(legendRect,
-                    "-" + StatPriorityHelper.MaxStatWeight.ToString("N1", CultureInfo.InvariantCulture));
+                    "-" + DefaultWorkTypePriorities.MaxStatWeight.ToString("N1", CultureInfo.InvariantCulture));
                 Text.Anchor = TextAnchor.LowerRight;
                 Verse.Widgets.Label(legendRect,
-                    StatPriorityHelper.MaxStatWeight.ToString("N1", CultureInfo.InvariantCulture));
+                    DefaultWorkTypePriorities.MaxStatWeight.ToString("N1", CultureInfo.InvariantCulture));
                 Text.Anchor = TextAnchor.UpperLeft;
                 Text.Font = GameFont.Small;
                 GUI.color = Color.white;
                 cur.y += 15f;
 
                 // statPriority weight sliders
-                foreach (var stat in stats)
-                {
-                    DrawStatRow(selectedOutfit, stat, ref cur, viewRect.width);
-                }
+                foreach (var stat in stats) { DrawStatRow(selectedOutfit, stat, ref cur, viewRect.width); }
             }
             else
             {
@@ -124,15 +113,6 @@ namespace OutfitManager.Patches
             Verse.Widgets.CheckboxLabeled(rect, ResourceBank.Strings.AutoWorkPriorities, ref outfit.AutoWorkPriorities);
             TooltipHandler.TipRegion(rect, ResourceBank.Strings.AutoWorkPrioritiesTooltip);
             pos.y += rect.height;
-        }
-
-        private static void DrawDeadmanToogle(ExtendedOutfit selectedOutfit, ref Vector2 cur, Rect canvas)
-        {
-            var rect = new Rect(cur.x, cur.y, canvas.width, 30f);
-            Verse.Widgets.CheckboxLabeled(rect, ResourceBank.Strings.PenalizeTaintedApparel,
-                ref selectedOutfit.PenalizeTaintedApparel);
-            TooltipHandler.TipRegion(rect, ResourceBank.Strings.PenalizeTaintedApparelTooltip);
-            cur.y += rect.height;
         }
 
         private static void DrawStatRow(ExtendedOutfit selectedOutfit, StatPriority statPriority, ref Vector2 cur,
@@ -169,11 +149,6 @@ namespace OutfitManager.Patches
                 if (Verse.Widgets.ButtonImage(buttonRect, ResourceBank.Textures.ResetButton))
                 {
                     statPriority.Weight = statPriority.Default;
-                    if (MP.IsInMultiplayer)
-                    {
-                        ExtendedOutfitProxy.SetStatPriority(selectedOutfit.uniqueId, statPriority.Stat,
-                            statPriority.Default);
-                    }
                 }
             }
 
@@ -186,116 +161,47 @@ namespace OutfitManager.Patches
 
             // draw slider
             GUI.color = AssignmentColor(statPriority);
-            var weight = GUI.HorizontalSlider(sliderRect, statPriority.Weight, -StatPriorityHelper.MaxStatWeight,
-                StatPriorityHelper.MaxStatWeight);
-            if (Mathf.Abs(weight - statPriority.Weight) > 1e-4)
-            {
-                statPriority.Weight = weight;
-                if (MP.IsInMultiplayer)
-                {
-                    ExtendedOutfitProxy.SetStatPriority(selectedOutfit.uniqueId, statPriority.Stat, weight);
-                }
-            }
+            var weight = GUI.HorizontalSlider(sliderRect, statPriority.Weight, -DefaultWorkTypePriorities.MaxStatWeight,
+                DefaultWorkTypePriorities.MaxStatWeight);
+            if (Mathf.Abs(weight - statPriority.Weight) > 1e-4) { statPriority.Weight = weight; }
             GUI.color = Color.white;
-
             // tooltips
             TooltipHandler.TipRegion(labelRect, statPriority.Stat.LabelCap + "\n\n" + statPriority.Stat.description);
-            if (!string.IsNullOrEmpty(buttonTooltip))
-            {
-                TooltipHandler.TipRegion(buttonRect, buttonTooltip);
-            }
+            if (!string.IsNullOrEmpty(buttonTooltip)) { TooltipHandler.TipRegion(buttonRect, buttonTooltip); }
             TooltipHandler.TipRegion(sliderRect, statPriority.Weight.ToStringByStyle(ToStringStyle.FloatTwo));
 
             // advance row
             cur.y += 30f;
         }
 
-        private static void DrawTemperatureStats(ExtendedOutfit selectedOutfit, ref Vector2 cur, Rect canvas)
+        private static void DrawTaintedToggle(ExtendedOutfit selectedOutfit, ref Vector2 cur, Rect canvas)
         {
-            // header
-            var tempHeaderRect = new Rect(cur.x, cur.y, canvas.width, 30f);
-            cur.y += 30f;
-            Text.Anchor = TextAnchor.LowerLeft;
-            Verse.Widgets.Label(tempHeaderRect, ResourceBank.Strings.PreferedTemperature);
-            Text.Anchor = TextAnchor.UpperLeft;
-
-            // line
-            GUI.color = Color.grey;
-            Verse.Widgets.DrawLineHorizontal(cur.x, cur.y, canvas.width);
-            GUI.color = Color.white;
-
-            // some padding
-            cur.y += MarginVertical;
-
-            // temperature slider
-            var sliderRect = new Rect(cur.x, cur.y, canvas.width - 20f, 40f);
-            var tempResetRect = new Rect(sliderRect.xMax + 4f, cur.y + MarginVertical, 16f, 16f);
-            cur.y += 40f; // includes padding
-            FloatRange targetTemps;
-            if (selectedOutfit.TargetTemperaturesOverride)
-            {
-                targetTemps = selectedOutfit.TargetTemperatures;
-                GUI.color = Color.white;
-            }
-            else
-            {
-                targetTemps = MinMaxTemperatureRange;
-                GUI.color = Color.grey;
-            }
-            var minMaxTemps = MinMaxTemperatureRange;
-            FloatRangeWidget.FloatRange(sliderRect, 123123123, ref targetTemps, minMaxTemps, ToStringStyle.Temperature);
-            GUI.color = Color.white;
-            if (Math.Abs(targetTemps.min - selectedOutfit.TargetTemperatures.min) > 1e-4 ||
-                Math.Abs(targetTemps.max - selectedOutfit.TargetTemperatures.max) > 1e-4)
-            {
-                selectedOutfit.TargetTemperatures = targetTemps;
-                selectedOutfit.TargetTemperaturesOverride = true;
-            }
-            if (selectedOutfit.TargetTemperaturesOverride)
-            {
-                if (Verse.Widgets.ButtonImage(tempResetRect, ResourceBank.Textures.ResetButton))
-                {
-                    selectedOutfit.TargetTemperaturesOverride = false;
-                    selectedOutfit.TargetTemperatures = MinMaxTemperatureRange;
-                }
-                TooltipHandler.TipRegion(tempResetRect, ResourceBank.Strings.TemperatureRangeReset);
-            }
+            var rect = new Rect(cur.x, cur.y, canvas.width, 30f);
+            Verse.Widgets.CheckboxLabeled(rect, ResourceBank.Strings.PenalizeTaintedApparel,
+                ref selectedOutfit.PenalizeTaintedApparel);
+            TooltipHandler.TipRegion(rect, ResourceBank.Strings.PenalizeTaintedApparelTooltip);
+            cur.y += rect.height;
         }
 
         [UsedImplicitly]
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         private static void Postfix(Rect inRect, Outfit ___selOutfitInt)
         {
-            if (!(___selOutfitInt is ExtendedOutfit selectedOutfit))
-            {
-                return;
-            }
+            if (!(___selOutfitInt is ExtendedOutfit selectedOutfit)) { return; }
             var canvas = new Rect(MarginLeft, Dialog_ManageOutfits.TopAreaHeight + MarginTop,
                 inRect.xMax - MarginLeft - MarginRight,
                 inRect.yMax - Dialog_ManageOutfits.TopAreaHeight - MarginTop - MarginBottom);
             GUI.BeginGroup(canvas);
             var cur = Vector2.zero;
-            if (MP.IsInMultiplayer)
-            {
-                MP.WatchBegin();
-                ExtendedOutfitProxy.Watch(ref selectedOutfit);
-            }
-            DrawDeadmanToogle(selectedOutfit, ref cur, canvas);
+            DrawTaintedToggle(selectedOutfit, ref cur, canvas);
             DrawAutoWorkPrioritiesToggle(selectedOutfit, ref cur, canvas);
-            DrawTemperatureStats(selectedOutfit, ref cur, canvas);
             cur.y += MarginVertical;
             DrawApparelStats(selectedOutfit, cur, canvas);
-            if (MP.IsInMultiplayer)
-            {
-                MP.WatchEnd();
-            }
-            else if (GUI.changed)
+            if (GUI.changed)
             {
                 var affected =
                     Find.CurrentMap.mapPawns.FreeColonists.Where(i => i.outfits.CurrentOutfit == selectedOutfit);
-                foreach (var pawn in affected)
-                {
-                    pawn.mindState?.Notify_OutfitChanged();
-                }
+                foreach (var pawn in affected) { pawn.mindState?.Notify_OutfitChanged(); }
             }
             GUI.EndGroup();
             GUI.color = Color.white;

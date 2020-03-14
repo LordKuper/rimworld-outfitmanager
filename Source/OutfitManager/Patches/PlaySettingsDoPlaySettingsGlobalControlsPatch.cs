@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
 using Verse;
@@ -12,10 +12,7 @@ namespace OutfitManager.Patches
         [UsedImplicitly]
         private static void Postfix(WidgetRow row, bool worldView)
         {
-            if (worldView)
-            {
-                return;
-            }
+            if (worldView) { return; }
             row.ToggleableIcon(ref OutfitManagerMod.ShowApparelScores, ResourceBank.Textures.ShirtBasic,
                 ResourceBank.Strings.OutfitShow, SoundDefOf.Mouseover_ButtonToggle);
         }

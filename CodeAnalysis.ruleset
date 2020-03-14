@@ -1002,8 +1002,8 @@
     <Rule Id="RE0001WithoutSuggestion" Action="Error" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.Features" RuleNamespace="Microsoft.CodeAnalysis.Features">
-    <Rule Id="IDE0010" Action="Error" />
-    <Rule Id="IDE0010WithoutSuggestion" Action="Error" />
+    <Rule Id="IDE0010" Action="None" />
+    <Rule Id="IDE0010WithoutSuggestion" Action="None" />
     <Rule Id="IDE0033" Action="Error" />
     <Rule Id="IDE0033WithoutSuggestion" Action="Error" />
     <Rule Id="IDE0044" Action="Error" />
