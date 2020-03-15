@@ -26,13 +26,12 @@ namespace OutfitManager
                 workStatPriorities = WorkPriorities.GetWorkTypeStatPrioritiesForPawn(pawn).ToList();
                 foreach (var workStatPriority in workStatPriorities)
                 {
-                    var sourceStatPriority = normalizedStatPriorities.Find(o =>
-                        o.Stat.defName.Equals(workStatPriority.Stat.defName, StringComparison.OrdinalIgnoreCase));
+                    var sourceStatPriority = normalizedStatPriorities.Find(o => o.Stat == workStatPriority.Stat);
                     if (sourceStatPriority == null)
                     {
                         normalizedStatPriorities.Add(new StatPriority(workStatPriority.Stat, workStatPriority.Weight));
                     }
-                    else { sourceStatPriority.Weight += workStatPriority.Weight; }
+                    else { sourceStatPriority.Weight = (sourceStatPriority.Weight + workStatPriority.Weight) / 2; }
                 }
             }
             NormalizeStatPriorities(normalizedStatPriorities);
@@ -40,10 +39,9 @@ namespace OutfitManager
             Log.Message("OutfitManager: Normalized stat priorities -----", true);
             foreach (var statPriority in normalizedStatPriorities)
             {
-                var originalWeight =
-                    originalStatPriorities.Find(o => o.Stat.defName == statPriority.Stat.defName)?.Weight ?? 0;
+                var originalWeight = originalStatPriorities.Find(o => o.Stat == statPriority.Stat)?.Weight ?? 0;
                 var workWeight = autoWorkPriorities
-                    ? workStatPriorities.Find(o => o.Stat.defName == statPriority.Stat.defName)?.Weight ?? 0
+                    ? workStatPriorities.Find(o => o.Stat == statPriority.Stat)?.Weight ?? 0
                     : 0;
                 Log.Message(
                     $"OutfitManager: {statPriority.Stat.defName} = {statPriority.Weight} ({originalWeight} original) ({workWeight} work)",
@@ -79,7 +77,7 @@ namespace OutfitManager
 
         public static void SetDefaultStatPriority(ICollection<StatPriority> priorities, string name, float weight)
         {
-            var stat = OutfitHelper.GetStatDefByName(name);
+            var stat = StatDef.Named(name);
             if (stat == null)
             {
                 Log.Message($"OutfitManager: Could not find apparel stat named '{name}'");

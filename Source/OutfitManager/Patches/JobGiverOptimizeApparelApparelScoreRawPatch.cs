@@ -12,14 +12,14 @@ namespace OutfitManager.Patches
     {
         [UsedImplicitly]
         [SuppressMessage("ReSharper", "InconsistentNaming")]
-        private static bool Prefix(Pawn pawn, Apparel ap, out float __result, NeededWarmth ___neededWarmth)
+        private static bool Prefix(Pawn pawn, Apparel ap, out float __result)
         {
             if (pawn == null)
             {
                 __result = float.NaN;
                 return true;
             }
-            __result = OutfitManagerMod.ApparelScoreRaw(pawn, ap, ___neededWarmth);
+            __result = OutfitManagerMod.ApparelScoreRaw(pawn, ap);
             return false;
         }
     }

@@ -18,8 +18,34 @@ namespace OutfitManager
             Log.Message("WorldComponent created!");
         }
 
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Collections.Look(ref _worktypePriorities, "worktypePriorities", LookMode.Deep);
+        }
+
+        public override void FinalizeInit()
+        {
+            base.FinalizeInit();
+            if (_worktypePriorities == null) { _worktypePriorities = new List<WorktypePriorities>(); }
+            foreach (var worktype in DefDatabase<WorkTypeDef>.AllDefsListForReading)
+            {
+                var workTypePriorities = _worktypePriorities.Find(o => o.Worktype == worktype);
+                if (workTypePriorities == null)
+                {
+                    workTypePriorities = new WorktypePriorities(worktype, GetDefaultPriorities(worktype.defName));
+                    _worktypePriorities.Add(workTypePriorities);
+                }
+                else
+                {
+                    workTypePriorities.Priorities.Clear();
+                    workTypePriorities.Priorities.AddRange(GetDefaultPriorities(worktype.defName));
+                }
+            }
+        }
+
         [SuppressMessage("Style", "IDE0010:Add missing cases")]
-        private static List<StatPriority> DefaultPriorities(string worktype)
+        private static List<StatPriority> GetDefaultPriorities(string worktype)
         {
             var stats = new List<StatPriority>();
             switch (worktype)
@@ -82,30 +108,13 @@ namespace OutfitManager
             return stats;
         }
 
-        public override void ExposeData()
-        {
-            base.ExposeData();
-            Scribe_Collections.Look(ref _worktypePriorities, "worktypePriorities", LookMode.Deep);
-        }
-
-        public override void FinalizeInit()
-        {
-            base.FinalizeInit();
-            if (!_worktypePriorities.NullOrEmpty()) { return; }
-            _worktypePriorities = new List<WorktypePriorities>();
-            foreach (var worktype in DefDatabase<WorkTypeDef>.AllDefsListForReading)
-            {
-                _worktypePriorities.Add(new WorktypePriorities(worktype, DefaultPriorities(worktype.defName)));
-            }
-        }
-
         private static IEnumerable<StatPriority> GetWorkTypeStatPriorities([NotNull] WorkTypeDef worktype)
         {
             if (worktype == null) { throw new ArgumentNullException(nameof(worktype)); }
             var worktypePriorities = _worktypePriorities.Find(wp => wp.Worktype == worktype);
             if (worktypePriorities == null)
             {
-                worktypePriorities = new WorktypePriorities(worktype, DefaultPriorities(worktype.defName));
+                worktypePriorities = new WorktypePriorities(worktype, GetDefaultPriorities(worktype.defName));
                 _worktypePriorities.Add(worktypePriorities);
             }
             return worktypePriorities.Priorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight));
@@ -114,53 +123,31 @@ namespace OutfitManager
         public static IEnumerable<StatPriority> GetWorkTypeStatPrioritiesForPawn([NotNull] Pawn pawn)
         {
             if (pawn == null) { throw new ArgumentNullException(nameof(pawn)); }
-            var statPriorities = new List<StatPriority>();
             var workTypes = DefDatabase<WorkTypeDef>.AllDefsListForReading;
-            var workTypePriorities = new Dictionary<string, int>();
-            var workTypeWeights = new Dictionary<string, IEnumerable<StatPriority>>();
+            var workTypePriorities = new Dictionary<WorkTypeDef, int>();
+            var workTypeWeights = new Dictionary<WorkTypeDef, IEnumerable<StatPriority>>();
             foreach (var workType in workTypes)
             {
                 var priority = pawn.workSettings?.GetPriority(workType) ?? 0;
                 if (priority <= 0) { continue; }
-                workTypePriorities.Add(workType.defName, priority);
-                workTypeWeights.Add(workType.defName, GetWorkTypeStatPriorities(workType));
+                workTypePriorities.Add(workType, priority);
+                workTypeWeights.Add(workType, GetWorkTypeStatPriorities(workType));
             }
             if (!workTypePriorities.Any()) { return new List<StatPriority>(); }
             var priorityRange =
                 new IntRange(workTypePriorities.Min(s => s.Value), workTypePriorities.Max(s => s.Value));
-            #if DEBUG
-            Log.Message(
-                $"OutfitManager: Work priorities for pawn '{pawn.Name}' [{priorityRange.min};{priorityRange.max}] -----",
-                true);
-            Log.Message("OutfitManager: ------------------------------", true);
-            #endif
+            var weightedPriorities = new List<StatPriority>();
             foreach (var workTypePriority in workTypePriorities)
             {
                 var normalizedWorkPriority = priorityRange.min == priorityRange.max
                     ? 1f
                     : 1f - (float) (workTypePriority.Value - priorityRange.min) /
                     (priorityRange.max + 1 - priorityRange.min);
-                #if DEBUG
-                Log.Message(
-                    $"OutfitManager: {workTypePriority.Key} = {workTypePriority.Value} ({normalizedWorkPriority} norm)",
-                    true);
-                #endif
-                foreach (var workTypeStatPriority in workTypeWeights[workTypePriority.Key])
-                {
-                    var statPriority = statPriorities.Find(o =>
-                        o.Stat.defName.Equals(workTypeStatPriority.Stat.defName, StringComparison.OrdinalIgnoreCase));
-                    if (statPriority == null)
-                    {
-                        statPriority = new StatPriority(workTypeStatPriority.Stat,
-                            workTypeStatPriority.Weight * normalizedWorkPriority);
-                        statPriorities.Add(statPriority);
-                    }
-                    else { statPriority.Weight += workTypeStatPriority.Weight * normalizedWorkPriority; }
-                }
+                weightedPriorities.AddRange(workTypeWeights[workTypePriority.Key].Select(statPriority =>
+                    new StatPriority(statPriority.Stat, statPriority.Weight * normalizedWorkPriority)));
             }
-            #if DEBUG
-            Log.Message("OutfitManager: ---------------------------------------------", true);
-            #endif
+            var statPriorities = weightedPriorities.Select(o => o.Stat).Distinct().Select(stat =>
+                new StatPriority(stat, weightedPriorities.Where(o => o.Stat == stat).Average(o => o.Weight))).ToList();
             return statPriorities;
         }
     }

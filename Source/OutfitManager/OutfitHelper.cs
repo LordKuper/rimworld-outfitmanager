@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using RimWorld;
 using Verse;
 
@@ -14,22 +13,22 @@ namespace OutfitManager
             StatCategoryDefOf.BasicsNonPawn, StatCategoryDefOf.Building, StatCategoryDefOf.StuffStatFactors
         };
 
-        private static readonly IEnumerable<string> BlacklistedStats = new List<string>
+        private static readonly IEnumerable<StatDef> BlacklistedStats = new List<StatDef>
         {
-            StatDefOf.ComfyTemperatureMin.defName,
-            StatDefOf.ComfyTemperatureMax.defName,
-            StatDefOf.Insulation_Cold.defName,
-            StatDefOf.Insulation_Heat.defName,
-            StatDefOf.StuffEffectMultiplierInsulation_Cold.defName,
-            StatDefOf.StuffEffectMultiplierInsulation_Heat.defName,
-            StatDefOf.StuffEffectMultiplierArmor.defName
+            StatDefOf.ComfyTemperatureMin,
+            StatDefOf.ComfyTemperatureMax,
+            StatDefOf.Insulation_Cold,
+            StatDefOf.Insulation_Heat,
+            StatDefOf.StuffEffectMultiplierInsulation_Cold,
+            StatDefOf.StuffEffectMultiplierInsulation_Heat,
+            StatDefOf.StuffEffectMultiplierArmor
         };
 
-        public static readonly Dictionary<string, FloatRange> StatRanges = new Dictionary<string, FloatRange>();
+        public static readonly Dictionary<StatDef, FloatRange> StatRanges = new Dictionary<StatDef, FloatRange>();
 
         internal static IEnumerable<StatDef> AllAvailableStats =>
             DefDatabase<StatDef>.AllDefs.Where(i =>
-                !BlacklistedCategories.Contains(i.category) && !BlacklistedStats.Contains(i.defName)).ToList();
+                !BlacklistedCategories.Contains(i.category) && !BlacklistedStats.Contains(i)).ToList();
 
         private static FloatRange CalculateStatRange(StatDef stat)
         {
@@ -67,7 +66,7 @@ namespace OutfitManager
                 statRange.min = stat.defaultBaseValue;
                 statRange.max = stat.defaultBaseValue;
             }
-            StatRanges.Add(stat.defName, statRange);
+            StatRanges.Add(stat, statRange);
             return statRange;
         }
 
@@ -187,16 +186,6 @@ namespace OutfitManager
             }
         }
 
-        public static StatDef GetStatDefByName([NotNull] string statName)
-        {
-            if (string.IsNullOrEmpty(statName))
-            {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(statName));
-            }
-            return AllAvailableStats.FirstOrDefault(o =>
-                statName.Equals(o.defName, StringComparison.OrdinalIgnoreCase));
-        }
-
         private static ExtendedOutfit MakeOutfit(OutfitDatabase database, string name)
         {
             #if DEBUG
@@ -213,7 +202,7 @@ namespace OutfitManager
 
         public static float NormalizeStatValue(StatDef stat, float value)
         {
-            var statRange = StatRanges.ContainsKey(stat.defName) ? StatRanges[stat.defName] : CalculateStatRange(stat);
+            var statRange = StatRanges.ContainsKey(stat) ? StatRanges[stat] : CalculateStatRange(stat);
             var valueDeviation = value - stat.defaultBaseValue;
             if (Math.Abs(statRange.min - statRange.max) < 0.0001)
             {

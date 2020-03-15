@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 
 namespace OutfitManager
 {
@@ -23,7 +24,8 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "SculptingSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.GeneralLaborSpeed, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.WorkSpeedGlobal, MediumPositive);
                 return priorities;
             }
         }
@@ -33,16 +35,16 @@ namespace OutfitManager
             get
             {
                 var priorities = new List<StatPriority>();
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MoveSpeed", MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ArmorRating_Blunt", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ArmorRating_Sharp", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryingCapacity", NegligiblePositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MoveSpeed, MinorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Blunt, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Sharp, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.CarryingCapacity, NegligiblePositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.Mass, NegligibleNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PainShockThreshold, MinorPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", NegligiblePositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryBulk", NegligiblePositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "Mass", NegligibleNegative);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "Suppressability", MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "PainShockThreshold", MinorPositive);
                 return priorities;
             }
         }
@@ -52,14 +54,15 @@ namespace OutfitManager
             get
             {
                 var priorities = new List<StatPriority>();
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MoveSpeed", MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "WorkSpeedGlobal", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ArmorRating_Blunt", NanoPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ArmorRating_Sharp", NanoPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryingCapacity", MicroPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MoveSpeed, MinorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.WorkSpeedGlobal, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.GeneralLaborSpeed, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Blunt, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Sharp, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.CarryingCapacity, MicroPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.Mass, NegligibleNegative);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", MicroPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryBulk", MicroPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "Mass", NegligibleNegative);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
                 return priorities;
             }
@@ -72,12 +75,13 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseCombatantStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AimingDelayFactor", MajorNegative);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeDPS", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeHitChance", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeDodgeChance", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyTouch", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeWeapon_DamageMultiplier", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AimingDelayFactor, MajorNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeDPS, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeHitChance, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeDodgeChance, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyTouch, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeWeapon_DamageMultiplier,
+                    MajorPositive);
                 return priorities;
             }
         }
@@ -89,7 +93,7 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MoveSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MoveSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -101,11 +105,11 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "FixBrokenDownBuildingSuccessChance",
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.FixBrokenDownBuildingSuccessChance,
                     MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ConstructionSpeed", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ConstructSuccessChance", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "SmoothingSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ConstructionSpeed, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ConstructSuccessChance, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.SmoothingSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -117,11 +121,11 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.FoodPoisonChance, MajorNegative);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "DrugCookingSpeed", MajorPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "ButcheryFleshSpeed", MajorPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "ButcheryFleshEfficiency", MajorPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "CookSpeed", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "FoodPoisonChance", MajorNegative);
                 return priorities;
             }
         }
@@ -133,9 +137,7 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "SmeltingSpeed", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ButcheryMechanoidSpeed", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ButcheryMechanoidEfficiency", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.GeneralLaborSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -147,10 +149,11 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MedicalSurgerySuccessChance", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MedicalSurgerySuccessChance,
+                    MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MedicalTendQuality, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MedicalTendSpeed, MediumPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "MedicalOperationSpeed", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MedicalTendQuality", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MedicalTendSpeed", MediumPositive);
                 return priorities;
             }
         }
@@ -159,10 +162,12 @@ namespace OutfitManager
         {
             get
             {
-                var priorities =
-                    new List<StatPriority>(
-                        BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MoveSpeed", MajorPositive);
+                var priorities = new List<StatPriority>();
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MoveSpeed, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Blunt, NegligiblePositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Sharp, NegligiblePositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.Mass, NegligibleNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
                 return priorities;
             }
         }
@@ -174,8 +179,8 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "PlantHarvestYield", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "PlantWorkSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PlantHarvestYield, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PlantWorkSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -187,16 +192,15 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "TrainAnimalChance", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "TameAnimalChance", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeDodgeChance", MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeHitChance", NanoPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeDPS", NanoPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyTouch", NanoPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeWeapon_DamageMultiplier", Neutral);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "PainShockThreshold", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AnimalGatherYield", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AnimalGatherSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.TrainAnimalChance, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.TameAnimalChance, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AnimalGatherYield, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AnimalGatherSpeed, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeDodgeChance, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeHitChance, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeDPS, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyTouch, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PainShockThreshold, MicroPositive);
                 return priorities;
             }
         }
@@ -208,7 +212,7 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryingCapacity", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.CarryingCapacity, MajorPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", MajorPositive);
                 return priorities;
             }
@@ -221,15 +225,16 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ShootingAccuracyPawn", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyShort", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyMedium", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyLong", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeDPS", Neutral);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeHitChance", Neutral);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "RangedWeapon_Cooldown", MajorNegative);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AimingDelayFactor", MajorNegative);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "PainShockThreshold", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.HuntingStealth, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ShootingAccuracyPawn, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyShort, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyMedium, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyLong, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeDPS, Neutral);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeHitChance, Neutral);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.RangedWeapon_Cooldown, MajorNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AimingDelayFactor, MajorNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PainShockThreshold, MajorPositive);
                 return priorities;
             }
         }
@@ -241,8 +246,8 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MiningYield", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MiningSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MiningYield, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MiningSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -254,8 +259,8 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "PlantHarvestYield", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "PlantWorkSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PlantHarvestYield, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PlantWorkSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -267,7 +272,7 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ResearchSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ResearchSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -279,8 +284,7 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "SmeltingSpeed", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "SmithingSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.GeneralLaborSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -292,13 +296,13 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseCombatantStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "ShootingAccuracyPawn", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyShort", MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyMedium", MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AccuracyLong", MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "MeleeDodgeChance", Neutral);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "AimingDelayFactor", MajorNegative);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "RangedWeapon_Cooldown", MajorNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ShootingAccuracyPawn, MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyShort, MinorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyMedium, MinorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AccuracyLong, MinorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MeleeDodgeChance, Neutral);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.AimingDelayFactor, MajorNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.RangedWeapon_Cooldown, MajorNegative);
                 return priorities;
             }
         }
@@ -310,7 +314,7 @@ namespace OutfitManager
                 var priorities =
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "TailoringSpeed", MajorPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.GeneralLaborSpeed, MajorPositive);
                 return priorities;
             }
         }
@@ -319,12 +323,15 @@ namespace OutfitManager
         {
             get
             {
-                var priorities =
-                    new List<StatPriority>(
-                        BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "NegotiationAbility", MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "SocialImpact", MediumPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "TradePriceImprovement", MajorPositive);
+                var priorities = new List<StatPriority>();
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.MoveSpeed, MicroPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Blunt, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Sharp, NanoPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.Mass, NegligibleNegative);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.NegotiationAbility, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.TradePriceImprovement, MediumPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.SocialImpact, MicroPositive);
+                StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
                 return priorities;
             }
         }
