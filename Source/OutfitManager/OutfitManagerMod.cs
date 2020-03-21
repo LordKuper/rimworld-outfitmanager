@@ -5,7 +5,6 @@ using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
-using UnityEngine;
 using Verse;
 
 namespace OutfitManager
@@ -17,10 +16,10 @@ namespace OutfitManager
         private const float HumanLeatherScoreBonus = 0.2f;
         private const float HumanLeatherScoreFactor = 0.2f;
         private const float HumanLeatherScorePenalty = 1.0f;
-        private const float MaxInsulationScore = 1;
+        private const float MaxInsulationScore = 2;
         private const float TaintedApparelScoreFactor = 0.2f;
         private const float TaintedApparelScorePenalty = 1.0f;
-        private const float TemperatureRangeOffset = 15.0f;
+        private const float TemperatureRangeOffset = 5.0f;
 
         private static readonly SimpleCurve HitPointsPercentScoreFactorCurve = new SimpleCurve
         {
@@ -30,12 +29,13 @@ namespace OutfitManager
             new CurvePoint(0.75f, 1f)
         };
 
-        private static readonly SimpleCurve InsulationFactorCurve = new SimpleCurve
+        private static readonly SimpleCurve InsulationScoreCurve = new SimpleCurve
         {
-            new CurvePoint(-20f, -MaxInsulationScore),
-            new CurvePoint(-10f, -0.6f * MaxInsulationScore),
-            new CurvePoint(10f, 0.6f * MaxInsulationScore),
-            new CurvePoint(20f, MaxInsulationScore)
+            new CurvePoint(-10f, -MaxInsulationScore),
+            new CurvePoint(-5f, -0.6f * MaxInsulationScore),
+            new CurvePoint(0f, 0),
+            new CurvePoint(5f, 0.6f * MaxInsulationScore),
+            new CurvePoint(10f, MaxInsulationScore)
         };
 
         internal static bool ShowApparelScores;
@@ -114,54 +114,67 @@ namespace OutfitManager
             #if DEBUG
             Log.Message("OutfitManager: Calculating scores for insulation", true);
             #endif
-            // NOTE: We can't rely on the vanilla check for taking off gear for temperature, because
-            // we need to consider all the wardrobe changes taken together; each individual change may
-            // note push us over the thresholds, but several changes together may.
-            // Return 1 for temperature offsets here, we'll look at the effects of any gear we have to 
-            // take off below.
-            // NOTE: This is still suboptimal, because we're still only considering one piece of apparel
-            // to wear at each time. A better solution would be reducing the problem to a series of linear
-            // equations, and then solving that system. 
-            // I'm not sure that's feasible at all; first off for simple computational reasons: the linear
-            // system to solve would be fairly massive, optimizing for dozens of pawns and hundreds of pieces 
-            // of gear simultaneously. Second, many of the stat functions aren't actually linear, and would
-            // have to be made to be linear.
             if (pawn.apparel.WornApparel.Contains(apparel)) { return 0f; }
             var currentRange = pawn.ComfortableTemperatureRange();
             var candidateRange = currentRange;
             var seasonalTemp = pawn.Map.mapTemperature.SeasonalTemp;
             var targetRange = new FloatRange(seasonalTemp - TemperatureRangeOffset,
                 seasonalTemp + TemperatureRangeOffset);
-            var apparelOffset = GetInsulationStats(apparel);
-            // effect of this piece of apparel
+            var apparelOffset = new FloatRange(-apparel.GetStatValue(StatDefOf.Insulation_Cold),
+                apparel.GetStatValue(StatDefOf.Insulation_Heat));
             candidateRange.min += apparelOffset.min;
             candidateRange.max += apparelOffset.max;
-            foreach (var otherInsulationRange in from otherApparel in pawn.apparel.WornApparel
-                where !ApparelUtility.CanWearTogether(apparel.def, otherApparel.def, pawn.RaceProps.body)
-                select GetInsulationStats(otherApparel))
+            foreach (var wornApparel in pawn.apparel.WornApparel)
             {
-                // effect of taking off any other apparel that is incompatible
-                candidateRange.min -= otherInsulationRange.min;
-                candidateRange.max -= otherInsulationRange.max;
+                if (ApparelUtility.CanWearTogether(apparel.def, wornApparel.def, pawn.RaceProps.body)) { continue; }
+                var wornInsulationRange = new FloatRange(-wornApparel.GetStatValue(StatDefOf.Insulation_Cold),
+                    wornApparel.GetStatValue(StatDefOf.Insulation_Heat));
+                candidateRange.min -= wornInsulationRange.min;
+                candidateRange.max -= wornInsulationRange.max;
             }
-            // did we get any closer to our target range? (smaller distance is better, negative values are overkill).
-            var currentDistance = new FloatRange(Mathf.Max(currentRange.min - targetRange.min, 0f),
-                Mathf.Max(targetRange.max - currentRange.max, 0f));
-            var candidateDistance = new FloatRange(Mathf.Max(candidateRange.min - targetRange.min, 0f),
-                Mathf.Max(targetRange.max - candidateRange.max, 0f));
-            // improvement in distances
-            var insulation = InsulationFactorCurve.Evaluate(currentDistance.min - candidateDistance.min) +
-                             InsulationFactorCurve.Evaluate(currentDistance.max - candidateDistance.max);
+            var insulationScore = 0f;
+            var coldBenefit = candidateRange.min < currentRange.min
+                ? currentRange.min <= targetRange.min
+                    ? 0
+                    :
+                    candidateRange.min <= targetRange.min && currentRange.min > targetRange.min
+                        ?
+                        currentRange.min - targetRange.min
+                        : currentRange.min - candidateRange.min
+                :
+                candidateRange.min <= targetRange.min
+                    ? 0
+                    :
+                    currentRange.min <= targetRange.min && candidateRange.min > targetRange.min
+                        ?
+                        targetRange.min - candidateRange.min
+                        : currentRange.min - candidateRange.min;
+            insulationScore += InsulationScoreCurve.Evaluate(coldBenefit);
+            var heatBenefit = candidateRange.max < currentRange.max
+                ? currentRange.max < targetRange.max
+                    ?
+                    currentRange.max - candidateRange.max
+                    : candidateRange.max < targetRange.max && currentRange.max >= targetRange.max
+                        ? targetRange.max - candidateRange.max
+                        : 0
+                :
+                candidateRange.max < targetRange.max
+                    ? candidateRange.max - currentRange.max
+                    :
+                    currentRange.max < targetRange.max && candidateRange.max >= targetRange.max
+                        ?
+                        targetRange.max - currentRange.max
+                        : 0;
+            insulationScore += InsulationScoreCurve.Evaluate(heatBenefit);
             #if DEBUG
             Log.Message(
-                $"OutfitManager: {pawn.Name.ToStringShort} :: {apparel.LabelCap}\n" +
-                $"\ttarget range: {targetRange}, current range: {currentRange}, candidate range {candidateRange}\n" +
-                $"\tcurrent distance: {currentDistance}, candidate distance: {candidateDistance}\n" +
-                $"\timprovement: {currentDistance.min - candidateDistance.min + (currentDistance.max - candidateDistance.max)}, insulation score: {insulation}\n",
+                $"OutfitManager: target range: {targetRange}, current range: {currentRange}, candidate range: {candidateRange}",
                 true);
-            Log.Message($"OutfitManager: Insulation score = {insulation}", true);
+            Log.Message(
+                $"OutfitManager: cold benefit = {coldBenefit}, heat benefit = {heatBenefit}), insulation score = {insulationScore}",
+                true);
             #endif
-            return insulation;
+            return insulationScore;
         }
 
         private static float ApparelScoreRawPriorities(Thing apparel, IEnumerable<StatPriority> statPriorities)
@@ -192,13 +205,6 @@ namespace OutfitManager
             Log.Message($"OutfitManager: Stat score of {apparel.Label} = {apparelScore}", true);
             #endif
             return apparelScore;
-        }
-
-        private static FloatRange GetInsulationStats(Apparel apparel)
-        {
-            var insulationCold = apparel.GetStatValue(StatDefOf.Insulation_Cold);
-            var insulationHeat = apparel.GetStatValue(StatDefOf.Insulation_Heat);
-            return new FloatRange(-insulationCold, insulationHeat);
         }
     }
 }

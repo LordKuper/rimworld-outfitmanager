@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\..\CodeAnalysis.ruleset = ..\..\CodeAnalysis.ruleset
 		..\..\LoadFolders.xml = ..\..\LoadFolders.xml
+		OutfitManager.sln.DotSettings = OutfitManager.sln.DotSettings
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
@@ -39,7 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "English", "English", "{5F78
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keyed", "Keyed", "{D7337E6C-44CB-4D27-B353-C3CAEE0B10F7}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\Languages\English\Keyed\Outfitted_Keyed.xml = ..\..\Languages\English\Keyed\Outfitted_Keyed.xml
+		..\..\Languages\English\Keyed\OutfitManager_Keyed.xml = ..\..\Languages\English\Keyed\OutfitManager_Keyed.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.1", "1.1", "{5904C1D4-C411-4433-9A1E-C00A762F3E8B}"
@@ -50,7 +51,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "English", "English", "{C5DC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keyed", "Keyed", "{202B204B-108F-4285-8994-9941308755BF}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\1.1\Languages\English\Keyed\Outfitted_Keyed.xml = ..\..\1.1\Languages\English\Keyed\Outfitted_Keyed.xml
+		..\..\1.1\Languages\English\Keyed\OutfitManager_Keyed.xml = ..\..\1.1\Languages\English\Keyed\OutfitManager_Keyed.xml
 	EndProjectSection
 EndProject
 Global
