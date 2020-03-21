@@ -153,7 +153,7 @@ namespace OutfitManager
             var heatBenefit = candidateRange.max < currentRange.max
                 ? currentRange.max < targetRange.max
                     ?
-                    currentRange.max - candidateRange.max
+                    candidateRange.max - currentRange.max
                     : candidateRange.max < targetRange.max && currentRange.max >= targetRange.max
                         ? targetRange.max - candidateRange.max
                         : 0
