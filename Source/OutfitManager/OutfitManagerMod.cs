@@ -155,7 +155,7 @@ namespace OutfitManager
                     ?
                     candidateRange.max - currentRange.max
                     : candidateRange.max < targetRange.max && currentRange.max >= targetRange.max
-                        ? targetRange.max - candidateRange.max
+                        ? candidateRange.max - targetRange.max
                         : 0
                 :
                 candidateRange.max < targetRange.max
@@ -183,7 +183,6 @@ namespace OutfitManager
             foreach (var statPriority in statPriorities)
             {
                 if (statScores.ContainsKey(statPriority.Stat)) { continue; }
-                var baseValue = apparel.def.statBases?.Find(modifier => modifier.stat == statPriority.Stat)?.value ?? 0;
                 var statValue = apparel.GetStatValue(statPriority.Stat);
                 var statOffset = apparel.def.equippedStatOffsets.GetStatOffsetFromList(statPriority.Stat);
                 var totalValue = statValue + statOffset;
@@ -195,7 +194,7 @@ namespace OutfitManager
                 {
                     var statRange = OutfitHelper.StatRanges[statPriority.Stat];
                     Log.Message(
-                        $"OutfitManager: Value of stat {statPriority.Stat} ({statPriority.Weight}) [{statRange.min},{statRange.max}] = {statValue} = {baseValue} {(statOffset < 0 ? "-" : "+")} {statOffset} = {totalValue} ({normalizedValue} norm) ({statPriority.Stat.defaultBaseValue} def) ({statScore} score)",
+                        $"OutfitManager: Value of stat {statPriority.Stat} ({statPriority.Weight}) [{statRange.min},{statRange.max}] = {totalValue} ({normalizedValue} norm) ({statPriority.Stat.defaultBaseValue} def) ({statScore} score)",
                         true);
                 }
                 #endif
