@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using Verse;
 
 namespace OutfitManager
 {
@@ -41,11 +42,14 @@ namespace OutfitManager
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.CarryingCapacity, NegligiblePositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.Mass, NegligibleNegative);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.PainShockThreshold, MinorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", NegligiblePositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryBulk", NegligiblePositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "Suppressability", MinorPositive);
-                return priorities;
+                if (ModsConfig.ActiveModsInLoadOrder.Any(m => m.Name == "Combat Extended"))
+                {
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", NegligiblePositive);
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryBulk", NegligiblePositive);
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "Suppressability", MinorPositive);
+                }
+                    return priorities;
             }
         }
 
@@ -61,10 +65,13 @@ namespace OutfitManager
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Sharp, NanoPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.CarryingCapacity, MicroPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.Mass, NegligibleNegative);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", MicroPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryBulk", MicroPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
-                return priorities;
+                if (ModsConfig.ActiveModsInLoadOrder.Any(m => m.Name == "Combat Extended"))
+                {
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", MicroPositive);
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryBulk", MicroPositive);
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
+                }
+                    return priorities;
             }
         }
 
@@ -167,8 +174,11 @@ namespace OutfitManager
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Blunt, NegligiblePositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.ArmorRating_Sharp, NegligiblePositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.Mass, NegligibleNegative);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
-                return priorities;
+                if (ModsConfig.ActiveModsInLoadOrder.Any(m => m.Name == "Combat Extended"))
+                {
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
+                }
+                    return priorities;
             }
         }
 
@@ -213,8 +223,11 @@ namespace OutfitManager
                     new List<StatPriority>(
                         BaseWorkerStatPriorities.Select(o => new StatPriority(o.Stat, o.Weight, o.Weight)));
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.CarryingCapacity, MajorPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", MajorPositive);
-                return priorities;
+                if (ModsConfig.ActiveModsInLoadOrder.Any(m => m.Name == "Combat Extended"))
+                {
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "CarryWeight", MajorPositive);
+                }
+                    return priorities;
             }
         }
 
@@ -331,8 +344,11 @@ namespace OutfitManager
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.NegotiationAbility, MediumPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.TradePriceImprovement, MediumPositive);
                 StatPriorityHelper.SetDefaultStatPriority(priorities, StatDefOf.SocialImpact, MicroPositive);
-                StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
-                return priorities;
+                if (ModsConfig.ActiveModsInLoadOrder.Any(m => m.Name == "Combat Extended"))
+                {
+                    StatPriorityHelper.SetDefaultStatPriority(priorities, "WornBulk", NegligibleNegative);
+                }
+                    return priorities;
             }
         }
     }
