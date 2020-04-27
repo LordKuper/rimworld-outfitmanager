@@ -76,7 +76,7 @@ namespace OutfitManager
             score += specialApparelScoreOffset;
             score += ApparelScoreRawInsulation(pawn, apparel);
             if (outfit.PenalizeTaintedApparel && apparel.WornByCorpse &&
-                ThoughtUtility.CanGetThought(pawn, ThoughtDefOf.DeadMansApparel))
+                !ThoughtUtility.ThoughtNullified(pawn, ThoughtDefOf.DeadMansApparel))
             {
                 #if DEBUG
                 Log.Message("OutfitManager: Penalizing tainted apparel", true);
@@ -86,7 +86,7 @@ namespace OutfitManager
             }
             if (apparel.Stuff == ThingDefOf.Human.race.leatherDef)
             {
-                if (ThoughtUtility.CanGetThought(pawn, ThoughtDefOf.HumanLeatherApparelSad))
+                if (!ThoughtUtility.ThoughtNullified(pawn, ThoughtDefOf.HumanLeatherApparelSad))
                 {
                     #if DEBUG
                     Log.Message("OutfitManager: Penalizing human leather apparel", true);
@@ -94,7 +94,7 @@ namespace OutfitManager
                     score -= HumanLeatherScorePenalty;
                     if (score > 0f) { score *= HumanLeatherScoreFactor; }
                 }
-                if (ThoughtUtility.CanGetThought(pawn, ThoughtDefOf.HumanLeatherApparelHappy))
+                if (!ThoughtUtility.ThoughtNullified(pawn, ThoughtDefOf.HumanLeatherApparelHappy))
                 {
                     #if DEBUG
                     Log.Message("OutfitManager: Promoting human leather apparel", true);
