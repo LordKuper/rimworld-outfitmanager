@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
@@ -22,7 +23,9 @@ namespace OutfitManager.Patches
             if (!(__instance is Apparel apparel)) { return; }
             if (!(pawn.outfits.CurrentOutfit is ExtendedOutfit outfit)) { return; }
             if (!outfit.filter.Allows(apparel)) { return; }
-            var score = JobGiver_OptimizeApparel.ApparelScoreGain(pawn, apparel);
+            var wornApparelScores = pawn.apparel.WornApparel
+                .Select(wornApparel => OutfitManagerMod.ApparelScoreRaw(pawn, wornApparel)).ToList();
+            var score = JobGiver_OptimizeApparel.ApparelScoreGain_NewTmp(pawn, apparel, wornApparelScores);
             if (!(Math.Abs(score) > 0.01f)) { return; }
             var pos = GenMapUI.LabelDrawPosFor(apparel, 0f);
             GenMapUI.DrawThingLabel(pos, score.ToString("F1", CultureInfo.InvariantCulture),

@@ -54,6 +54,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keyed", "Keyed", "{202B204B
 		..\..\1.1\Languages\English\Keyed\OutfitManager_Keyed.xml = ..\..\1.1\Languages\English\Keyed\OutfitManager_Keyed.xml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.2", "1.2", "{C77D5C6E-DF34-48D3-B023-E80C637C0AD8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Languages", "Languages", "{A232E387-A88F-474F-B5FF-5B516A52E101}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "English", "English", "{90EACA79-422A-4080-8BDC-AF578F6F4280}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keyed", "Keyed", "{B2CB1E1B-0B93-40FA-A92B-E9EAA89F82E5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\1.2\Languages\English\Keyed\OutfitManager_Keyed.xml = ..\..\1.2\Languages\English\Keyed\OutfitManager_Keyed.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +85,9 @@ Global
 		{6B47B8CA-807D-4188-B860-9C5E0057302D} = {5904C1D4-C411-4433-9A1E-C00A762F3E8B}
 		{C5DCCDA5-52AF-4AB6-A286-0FBFD9B943DD} = {6B47B8CA-807D-4188-B860-9C5E0057302D}
 		{202B204B-108F-4285-8994-9941308755BF} = {C5DCCDA5-52AF-4AB6-A286-0FBFD9B943DD}
+		{A232E387-A88F-474F-B5FF-5B516A52E101} = {C77D5C6E-DF34-48D3-B023-E80C637C0AD8}
+		{90EACA79-422A-4080-8BDC-AF578F6F4280} = {A232E387-A88F-474F-B5FF-5B516A52E101}
+		{B2CB1E1B-0B93-40FA-A92B-E9EAA89F82E5} = {90EACA79-422A-4080-8BDC-AF578F6F4280}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C305455-306A-4E43-8883-25BA9E301ED8}
