@@ -91,6 +91,10 @@ namespace LordKuper.OutfitManager
             {
                 statWeight.Protected = false;
             }
+            foreach (var workType in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder)
+            {
+                _workTypeRules.Add(new WorkTypeThingRule(workType.defName));
+            }
             foreach (var defaultRule in WorkTypeThingRule.DefaultRules)
             {
                 var rule = _workTypeRules.FirstOrDefault(r =>

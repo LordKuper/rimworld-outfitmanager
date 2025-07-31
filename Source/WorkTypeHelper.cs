@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
@@ -19,10 +20,15 @@ namespace LordKuper.OutfitManager
         /// </returns>
         public static Dictionary<string, float> GetNormalizedWorkTypeWeights(Pawn pawn)
         {
-            var workTypePriorities = WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.Where(wt =>
-                    pawn.workSettings.WorkIsActive(wt) && Settings.WorkTypeRules
-                        .First(r => r.WorkTypeDefName.Equals(wt.defName)).StatWeights.Any())
-                .ToDictionary(w => w.defName, w => pawn.workSettings.GetPriority(w));
+            var workTypePriorities = new Dictionary<string, int>();
+            foreach (var workType in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.Where(wt =>
+                         pawn.workSettings.WorkIsActive(wt)))
+            {
+                var rule = Settings.WorkTypeRules.FirstOrDefault(r =>
+                    r.WorkTypeDefName.Equals(workType.defName, StringComparison.OrdinalIgnoreCase));
+                if (rule == null || !rule.StatWeights.Any()) { continue; }
+                workTypePriorities[workType.defName] = pawn.workSettings.GetPriority(workType);
+            }
             if (workTypePriorities.Count == 0) { return new Dictionary<string, float>(); }
             var wpMin = workTypePriorities.Min(wp => wp.Value);
             var wpMax = workTypePriorities.Max(wp => wp.Value);
