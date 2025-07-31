@@ -1,3 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
-<LanguageData></LanguageData>
+<LanguageData>
+	<LordKuper.OutfitManager.ModTitle>Outfit Manager</LordKuper.OutfitManager.ModTitle>
+	<LordKuper.OutfitManager.General.Title>General</LordKuper.OutfitManager.General.Title>
+	<LordKuper.OutfitManager.General.WorkTypeScoreFactorLabel>Work type score factor</LordKuper.OutfitManager.General.WorkTypeScoreFactorLabel>
+	<LordKuper.OutfitManager.General.WorkTypeScoreFactorTooltip>The score factor used for work type evaluation.</LordKuper.OutfitManager.General.WorkTypeScoreFactorTooltip>
+	<LordKuper.OutfitManager.WorkTypes.Title>Work types</LordKuper.OutfitManager.WorkTypes.Title>
+	<LordKuper.OutfitManager.WorkTypes.SelectWorkType>Select work type</LordKuper.OutfitManager.WorkTypes.SelectWorkType>
+</LanguageData>

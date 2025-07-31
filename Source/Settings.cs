@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
-using LordKuper.Common;
 using UnityEngine;
 using Verse;
+using Strings = LordKuper.OutfitManager.Resources.Strings;
 
 namespace LordKuper.OutfitManager
 {
@@ -12,17 +11,12 @@ namespace LordKuper.OutfitManager
     ///     Mod settings for the Outfit Manager.
     /// </summary>
     [UsedImplicitly]
-    public class Settings : ModSettings
+    public partial class Settings : ModSettings
     {
         /// <summary>
-        ///     The maximum allowed value for the work type score factor.
+        ///     The currently selected tab in the settings window.
         /// </summary>
-        private const float WorkTypeScoreFactorMax = 5f;
-
-        /// <summary>
-        ///     The minimum allowed value for the work type score factor.
-        /// </summary>
-        private const float WorkTypeScoreFactorMin = 0.1f;
+        private static SettingsTabs _currentTab;
 
         /// <summary>
         ///     Indicates whether the settings have been initialized.
@@ -30,33 +24,44 @@ namespace LordKuper.OutfitManager
         private static bool _isInitialized;
 
         /// <summary>
-        ///     The list of work type thing rules.
+        ///     The scroll position for the settings window.
         /// </summary>
-        private static List<WorkTypeThingRule> _workTypeRules = new List<WorkTypeThingRule>();
-
-        private static float _workTypeScoreFactor = 2.0f;
+        private static Vector2 _scrollPosition;
 
         /// <summary>
-        ///     Gets the read-only list of work type thing rules.
-        ///     Ensures initialization before returning the rules.
+        ///     The list of tab records for the settings window.
         /// </summary>
-        public static IReadOnlyList<WorkTypeThingRule> WorkTypeRules
+        private static readonly List<TabRecord> Tabs = new List<TabRecord>();
+
+        /// <summary>
+        ///     Draws the contents of the specified tab in the settings window.
+        /// </summary>
+        /// <param name="rect">The rectangle area to draw the tab contents.</param>
+        /// <param name="tab">The tab to display.</param>
+        private static void DoTab(Rect rect, SettingsTabs tab)
         {
-            get
+            switch (tab)
             {
-                Initialize();
-                return _workTypeRules;
+                case SettingsTabs.General:
+                    DoGeneralTab(rect);
+                    break;
+                case SettingsTabs.WorkTypes:
+                    DoWorkTypesTab(rect);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tab));
             }
         }
 
         /// <summary>
-        ///     Gets the score factor used for work type evaluation.
-        ///     Value is clamped between <see cref="WorkTypeScoreFactorMin" /> and <see cref="WorkTypeScoreFactorMax" />.
+        ///     Draws the window contents for the mod settings.
         /// </summary>
-        public static float WorkTypeScoreFactor
+        /// <param name="rect">The rectangle area to draw the window contents.</param>
+        public static void DoWindowContents(Rect rect)
         {
-            get => _workTypeScoreFactor;
-            private set => _workTypeScoreFactor = value;
+            Initialize();
+            var activeTabRect = Common.UI.Tabs.DoTabs(rect, Tabs);
+            DoTab(activeTabRect, _currentTab);
         }
 
         /// <summary>
@@ -65,36 +70,37 @@ namespace LordKuper.OutfitManager
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Collections.Look(ref _workTypeRules, nameof(_workTypeRules), LookMode.Deep);
-            Scribe_Values.Look(ref _workTypeScoreFactor, nameof(WorkTypeScoreFactor));
+            ExposeGeneralData();
+            ExposeWorkTypesData();
         }
 
         /// <summary>
-        ///     Initializes the settings and ensures default rules are present.
-        ///     Clamps the <see cref="WorkTypeScoreFactor" /> value and adds missing default rules.
+        ///     Initializes the settings.
         /// </summary>
         private static void Initialize()
         {
             if (_isInitialized) { return; }
             _isInitialized = true;
-            WorkTypeScoreFactor = Mathf.Clamp(WorkTypeScoreFactor, WorkTypeScoreFactorMin, WorkTypeScoreFactorMax);
-            if (_workTypeRules == null) { _workTypeRules = new List<WorkTypeThingRule>(); }
-            foreach (var rule in WorkTypeThingRule.DefaultRules)
+            InitializeTabs();
+            InitializeGeneralSettings();
+            InitializeWorkTypesSettings();
+        }
+
+        /// <summary>
+        ///     Initializes the tab records for the settings window.
+        /// </summary>
+        private static void InitializeTabs()
+        {
+            Tabs.Add(new TabRecord(Strings.Settings.General.Title, () =>
             {
-                if (!_workTypeRules.Any(r =>
-                        r.WorkTypeDefName.Equals(rule.WorkTypeDefName, StringComparison.OrdinalIgnoreCase)))
-                {
-                    _workTypeRules.Add(rule);
-                }
-            }
-#if DEBUG
-            Logger.LogMessage("Initializing work type rules...");
-            foreach (var rule in _workTypeRules)
+                _currentTab = SettingsTabs.General;
+                _scrollPosition.Set(0, 0);
+            }, () => _currentTab == SettingsTabs.General));
+            Tabs.Add(new TabRecord(Strings.Settings.WorkTypes.Title, () =>
             {
-                Logger.LogMessage(
-                    $"{rule.Label} - {string.Join(", ", rule.StatWeights.Select(sw => $"{sw.StatDefName}={sw.Weight:F2}"))}");
-            }
-#endif
+                _currentTab = SettingsTabs.WorkTypes;
+                _scrollPosition.Set(0, 0);
+            }, () => _currentTab == SettingsTabs.WorkTypes));
         }
     }
 }

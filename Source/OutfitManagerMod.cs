@@ -1,6 +1,7 @@
 using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
+using UnityEngine;
 using Verse;
 
 namespace LordKuper.OutfitManager
@@ -25,8 +26,28 @@ namespace LordKuper.OutfitManager
         public OutfitManagerMod(ModContentPack content) : base(content)
         {
             Logger.LogMessage($"Initializing (v.{Assembly.GetExecutingAssembly().GetName().Version})...");
+            GetSettings<Settings>();
             var harmony = new Harmony(ModId);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+
+        /// <summary>
+        ///     Draws the settings window contents for the mod.
+        /// </summary>
+        /// <param name="inRect">The rectangle area to draw the settings window in.</param>
+        public override void DoSettingsWindowContents(Rect inRect)
+        {
+            base.DoSettingsWindowContents(inRect);
+            Settings.DoWindowContents(inRect);
+        }
+
+        /// <summary>
+        ///     Gets the category name for the mod settings.
+        /// </summary>
+        /// <returns>The mod title string.</returns>
+        public override string SettingsCategory()
+        {
+            return Resources.Strings.ModTitle;
         }
     }
 }
