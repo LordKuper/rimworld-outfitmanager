@@ -1,8 +1,7 @@
-﻿namespace LordKuper.OutfitManager
+﻿namespace LordKuper.OutfitManager;
+
+internal enum SettingsTabs
 {
-    internal enum SettingsTabs
-    {
-        General,
-        WorkTypes
-    }
+    General,
+    WorkTypes
 }

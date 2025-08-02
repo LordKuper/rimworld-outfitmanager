@@ -1,65 +1,64 @@
 ﻿using Verse;
 
-namespace LordKuper.OutfitManager
+namespace LordKuper.OutfitManager;
+
+/// <summary>
+///     Provides access to common resources used throughout the mod.
+/// </summary>
+public static class Resources
 {
     /// <summary>
-    ///     Provides access to common resources used throughout the mod.
+    ///     Contains string resources for the mod.
     /// </summary>
-    public static class Resources
+    public static class Strings
     {
         /// <summary>
-        ///     Contains string resources for the mod.
+        ///     Gets the translated mod title string.
         /// </summary>
-        public static class Strings
+        public static string ModTitle => $"{OutfitManagerMod.ModId}.{nameof(ModTitle)}".Translate();
+
+        /// <summary>
+        ///     Contains string resources related to mod settings.
+        /// </summary>
+        public static class Settings
         {
             /// <summary>
-            ///     Gets the translated mod title string.
+            ///     Contains general settings string resources.
             /// </summary>
-            public static string ModTitle => $"{OutfitManagerMod.ModId}.{nameof(ModTitle)}".Translate();
-
-            /// <summary>
-            ///     Contains string resources related to mod settings.
-            /// </summary>
-            public static class Settings
+            public static class General
             {
                 /// <summary>
-                ///     Contains general settings string resources.
+                ///     Gets the translated title for general settings.
                 /// </summary>
-                public static class General
-                {
-                    /// <summary>
-                    ///     Gets the translated title for general settings.
-                    /// </summary>
-                    public static string Title =>
-                        $"{OutfitManagerMod.ModId}.{nameof(General)}.{nameof(Title)}".Translate();
-
-                    /// <summary>
-                    ///     Gets the translated label for the work type score factor setting.
-                    /// </summary>
-                    public static string WorkTypeScoreFactorLabel =>
-                        $"{OutfitManagerMod.ModId}.{nameof(General)}.{nameof(WorkTypeScoreFactorLabel)}".Translate();
-
-                    /// <summary>
-                    ///     Gets the translated tooltip for the work type score factor setting.
-                    /// </summary>
-                    public static string WorkTypeScoreFactorTooltip =>
-                        $"{OutfitManagerMod.ModId}.{nameof(General)}.{nameof(WorkTypeScoreFactorTooltip)}".Translate();
-                }
+                public static string Title =>
+                    $"{OutfitManagerMod.ModId}.{nameof(General)}.{nameof(Title)}".Translate();
 
                 /// <summary>
-                ///     Contains string resources related to work types settings.
+                ///     Gets the translated label for the work type score factor setting.
                 /// </summary>
-                public static class WorkTypes
-                {
-                    public static string SelectWorkType =>
-                        $"{OutfitManagerMod.ModId}.{nameof(WorkTypes)}.{nameof(SelectWorkType)}".Translate();
+                public static string WorkTypeScoreFactorLabel =>
+                    $"{OutfitManagerMod.ModId}.{nameof(General)}.{nameof(WorkTypeScoreFactorLabel)}".Translate();
 
-                    /// <summary>
-                    ///     Gets the translated title for work types settings.
-                    /// </summary>
-                    public static string Title =>
-                        $"{OutfitManagerMod.ModId}.{nameof(WorkTypes)}.{nameof(Title)}".Translate();
-                }
+                /// <summary>
+                ///     Gets the translated tooltip for the work type score factor setting.
+                /// </summary>
+                public static string WorkTypeScoreFactorTooltip =>
+                    $"{OutfitManagerMod.ModId}.{nameof(General)}.{nameof(WorkTypeScoreFactorTooltip)}".Translate();
+            }
+
+            /// <summary>
+            ///     Contains string resources related to work types settings.
+            /// </summary>
+            public static class WorkTypes
+            {
+                public static string SelectWorkType =>
+                    $"{OutfitManagerMod.ModId}.{nameof(WorkTypes)}.{nameof(SelectWorkType)}".Translate();
+
+                /// <summary>
+                ///     Gets the translated title for work types settings.
+                /// </summary>
+                public static string Title =>
+                    $"{OutfitManagerMod.ModId}.{nameof(WorkTypes)}.{nameof(Title)}".Translate();
             }
         }
     }
