@@ -18,7 +18,7 @@ public partial class Settings
     /// <summary>
     ///     The list of work type thing rules.
     /// </summary>
-    private static List<WorkTypeThingRule> _workTypeRules = new();
+    private static List<WorkTypeThingRule> _workTypeRules = [];
 
     /// <summary>
     ///     The height of the work types content area.
@@ -33,7 +33,7 @@ public partial class Settings
     /// <summary>
     ///     The list of available items for the selected work type.
     /// </summary>
-    private static readonly List<ThingDef> WorkTypesAvailableItems = new();
+    private static readonly List<ThingDef> WorkTypesAvailableItems = [];
 
     /// <summary>
     ///     Gets or sets the currently selected work type rule.

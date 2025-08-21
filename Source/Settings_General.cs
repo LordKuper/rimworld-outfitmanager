@@ -68,7 +68,7 @@ public partial class Settings
     {
         return Fields.DoLabeledFloatSlider(rect, 0, null, Resources.Strings.Settings.General.WorkTypeScoreFactorLabel,
             Resources.Strings.Settings.General.WorkTypeScoreFactorTooltip, ref _workTypeScoreFactor,
-            WorkTypeScoreFactorMin, WorkTypeScoreFactorMax, 0.1f, out _);
+            WorkTypeScoreFactorMin, WorkTypeScoreFactorMax, 0.1f, null, out _);
     }
 
     /// <summary>
