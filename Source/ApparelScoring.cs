@@ -33,7 +33,7 @@ public static class ApparelScoring
     /// </returns>
     private static ApparelCache GetApparelCache(Apparel apparel)
     {
-        return ApparelCache.GetOrCreateValue(apparel);
+        return ApparelCache.GetValue(apparel, a => new ApparelCache(a));
     }
 
     /// <summary>
