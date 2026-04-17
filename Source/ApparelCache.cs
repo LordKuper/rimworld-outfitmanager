@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using LordKuper.Common;
@@ -72,23 +71,14 @@ internal class ApparelCache : ThingCache
     public override bool Update(RimWorldTime time)
     {
         if (!base.Update(time)) { return false; }
-        try
+        _workTypeScores.Clear();
+        foreach (var workTypeDef in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder)
         {
-            _workTypeScores.Clear();
-            foreach (var workTypeDef in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder)
-            {
-                var score = 0f;
-                var workTypeRule =
-                    Settings.WorkTypeRules.FirstOrDefault(rule => rule.WorkTypeDefName == workTypeDef.defName);
-                if (workTypeRule != null) { score += workTypeRule.GetThingScore(Thing); }
-                _workTypeScores.Add(workTypeDef.defName, score);
-            }
-        }
-        catch (Exception exception)
-        {
-            Log.Error(
-                $"Equipment Manager: Could not update cache of '{Thing.LabelCapNoCount}' ({Thing.def?.defName}): {exception.Message}");
-            throw;
+            var score = 0f;
+            var workTypeRule =
+                Settings.WorkTypeRules.FirstOrDefault(rule => rule.WorkTypeDefName == workTypeDef.defName);
+            if (workTypeRule != null) { score += workTypeRule.GetThingScore(Thing); }
+            _workTypeScores.Add(workTypeDef.defName, score);
         }
         return true;
     }

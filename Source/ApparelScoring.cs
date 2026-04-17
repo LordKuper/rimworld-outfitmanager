@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LordKuper.Common;
 using RimWorld;
 using Verse;
@@ -18,8 +19,9 @@ public static class ApparelScoring
 
     /// <summary>
     ///     Caches <see cref="ApparelCache" /> instances for each <see cref="Apparel" /> item.
+    ///     Uses weak keys so destroyed apparel is collected by GC automatically.
     /// </summary>
-    private static readonly Dictionary<Apparel, ApparelCache> ApparelCache = new();
+    private static readonly ConditionalWeakTable<Apparel, ApparelCache> ApparelCache = new();
 
     /// <summary>
     ///     Gets the <see cref="ApparelCache" /> for the specified <see cref="Apparel" /> item,
@@ -31,12 +33,7 @@ public static class ApparelScoring
     /// </returns>
     private static ApparelCache GetApparelCache(Apparel apparel)
     {
-        if (!ApparelCache.TryGetValue(apparel, out var cache))
-        {
-            cache = new ApparelCache(apparel);
-            ApparelCache[apparel] = cache;
-        }
-        return cache;
+        return ApparelCache.GetOrCreateValue(apparel);
     }
 
     /// <summary>
@@ -103,10 +100,7 @@ public static class ApparelScoring
     {
         foreach (var def in DefDatabase<ThingDef>.AllDefs.Where(def => def.IsApparel))
         {
-            var thing = def.MadeFromStuff
-                ? ThingMaker.MakeThing(def, GenStuff.DefaultStuffFor(def))
-                : ThingMaker.MakeThing(def);
-            foreach (var rule in Settings.WorkTypeRules) { rule.GetThingScore(thing); }
+            foreach (var rule in Settings.WorkTypeRules) { rule.GetThingDefScore(def); }
         }
     }
 }

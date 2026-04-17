@@ -20,6 +20,7 @@ public static class WorkTypeHelper
     /// </returns>
     public static Dictionary<string, float> GetNormalizedWorkTypeWeights(Pawn pawn)
     {
+        if (pawn.workSettings == null) { return new Dictionary<string, float>(); }
         var workTypePriorities = new Dictionary<string, int>();
         foreach (var workType in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.Where(wt =>
                      pawn.workSettings.WorkIsActive(wt)))
