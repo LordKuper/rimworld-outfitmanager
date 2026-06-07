@@ -26,19 +26,21 @@ internal class ApparelCache : ThingCache
 
     /// <summary>
     ///     Gets the score for a specific work type definition name.
+    ///     All valid callers go through <see cref="GetWorkTypesScore" />, which calls
+    ///     <see cref="Update" /> first. Update eagerly seeds every work type in
+    ///     <see cref="WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder" /> into
+    ///     <see cref="_workTypeScores" />, so every key produced by
+    ///     <see cref="WorkTypeHelper.GetNormalizedWorkTypeWeights" /> is already present by the
+    ///     time this method runs. Reading from the already-populated dictionary is sufficient;
+    ///     returning 0f for an absent key is the same result the old miss-path produced.
     /// </summary>
     /// <param name="workTypeDefName">The work type definition name.</param>
     /// <returns>
-    ///     The score for the specified work type. If the score is not cached, it is calculated and added to the cache.
+    ///     The cached score for the specified work type, or 0 if the key is not present.
     /// </returns>
     private float GetWorkTypeScore(string workTypeDefName)
     {
-        if (!_workTypeScores.TryGetValue(workTypeDefName, out var score))
-        {
-            var rule = Settings.WorkTypeRules.FirstOrDefault(r => r.WorkTypeDefName == workTypeDefName);
-            if (rule != null) { score = rule.GetThingScore(Thing); }
-            _workTypeScores.Add(workTypeDefName, score);
-        }
+        var score = _workTypeScores.TryGetValue(workTypeDefName, out var cached) ? cached : 0f;
 #if DEBUG
             Logger.LogMessage(
                 $"Work type score for '{Thing.LabelCapNoCount}' ({Thing.def?.defName}) and work type '{workTypeDefName}' = {score:F2}");
