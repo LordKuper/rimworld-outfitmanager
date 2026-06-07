@@ -104,7 +104,12 @@ public partial class Settings
         foreach (var rule in _workTypeRules.ToList())
         {
             // WorkTypeDefName may be null on a corrupt save entry; skip rather than crash
-            if (rule.WorkTypeDefName == null || !existingRules.Add(rule.WorkTypeDefName)) _workTypeRules.Remove(rule);
+            if (rule.WorkTypeDefName == null || !existingRules.Add(rule.WorkTypeDefName))
+            {
+                _workTypeRules.Remove(rule);
+                continue;
+            }
+
             foreach (var statWeight in rule.StatWeights) statWeight.Protected = false;
         }
 
