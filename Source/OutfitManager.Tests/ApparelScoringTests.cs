@@ -1,24 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using LordKuper.OutfitManager.Patches;
-using Verse;
 
 namespace LordKuper.OutfitManager.Tests;
 
 /// <summary>
 ///     Unit tests for <see cref="ApparelScoring" /> factor multiplication and characterization tests.
-///     AC-26: Tests the WorkTypeScoreFactor multiplication path.
-///     AC-27: Characterization tests for C-3 and C-4 ensuring behaviour is preserved across simplifications.
+///     Covers the WorkTypeScoreFactor multiplication path and fail-soft transpiler contract.
 ///     NOTE: GetPawnApparelWorkScore tests require live RimWorld context to construct Pawn + Apparel.
-///     Currently marked as ignored pending in-game verification (MS-3).
+///     Currently marked as ignored pending in-game verification.
 /// </summary>
 [TestFixture]
 [NonParallelizable]
 public class ApparelScoringTests : StateIsolationTestBase
 {
     /// <summary>
-    ///     AC-26: GetPawnApparelWorkScore multiplies work score by WorkTypeScoreFactor.
+    ///     GetPawnApparelWorkScore multiplies the work score by WorkTypeScoreFactor.
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
@@ -30,7 +25,7 @@ public class ApparelScoringTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     AC-26: GetPawnApparelWorkScore returns 0 when pawn has no active work types.
+    ///     GetPawnApparelWorkScore returns 0 when pawn has no active work types.
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
@@ -42,7 +37,7 @@ public class ApparelScoringTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     AC-26: GetPawnApparelWorkScore returns 0 when pawn has null workSettings.
+    ///     GetPawnApparelWorkScore returns 0 when pawn has null workSettings.
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
@@ -54,15 +49,15 @@ public class ApparelScoringTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     C-3 CHARACTERIZATION: ApparelCache.GetWorkTypeScore rule lookup duplicates
-    ///     Settings.WorkTypeRules.FirstOrDefault(...) in both Update and GetWorkTypeScore paths.
-    ///     This test verifies the current (pre-simplification) behaviour to ensure later consolidation
-    ///     is provably neutral.
+    ///     CHARACTERIZATION: ApparelCache.GetWorkTypeScore previously duplicated the
+    ///     Settings.WorkTypeRules.FirstOrDefault(...) lookup in both the Update and GetWorkTypeScore paths.
+    ///     This test verifies the consolidated single-lookup behaviour is functionally equivalent to the
+    ///     pre-consolidation dual-lookup approach.
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
-    [NUnit.Framework.Description("C-3 CHARACTERIZATION: FirstOrDefault rule lookup duplication")]
-    [Ignore("Requires live RimWorld Apparel context; see MS-3 in-game verification")]
+    [Description("CHARACTERIZATION: FirstOrDefault rule lookup consolidation is behaviour-neutral")]
+    [Ignore("Requires live RimWorld Apparel context; in-game verification pending")]
     public void ApparelCache_FirstOrDefaultLookupPaths_AreFunctionallyEquivalent()
     {
         // Expected: both FirstOrDefault lookup paths (Update and GetWorkTypeScore) return identical scores.
@@ -71,13 +66,15 @@ public class ApparelScoringTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     C-4 CHARACTERIZATION: ApparelScoring.Initialize() sets _isInitialized = true BEFORE
-    ///     InitializeStatRanges() runs. This test verifies the current ordering to ensure that
-    ///     a later fix (setting _isInitialized AFTER init completes) doesn't change observable behaviour.
+    ///     CHARACTERIZATION: ApparelScoring.Initialize() now sets _isInitialized = true AFTER
+    ///     InitializeStatRanges() completes, so a failure during initialization does not leave the flag
+    ///     set with partially-seeded state. This test documents that _isInitialized is true after a
+    ///     full successful Initialize() cycle, confirming the flag-ordering fix is behaviour-neutral
+    ///     from the caller's perspective.
     /// </summary>
     [Test]
-    [NUnit.Framework.Description("C-4 CHARACTERIZATION: Initialize() _isInitialized flag ordering")]
-    [Ignore("Requires live RimWorld context for full initialization cycle; see MS-3")]
+    [Description("CHARACTERIZATION: Initialize() sets _isInitialized only after full init completes")]
+    [Ignore("Requires live RimWorld context for full initialization cycle; in-game verification pending")]
     public void ApparelScoring_InitializeFlagIsSetImmediately()
     {
         // Expected: _isInitialized is true after Initialize() completes.
@@ -86,16 +83,16 @@ public class ApparelScoringTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     AC-27: Transpiler fail-soft contract test.
-    ///     If the JobGiverPatch.Transpiler cannot find the expected IL pattern,
-    ///     it returns the original instructions unchanged and logs an error (fail-soft).
-    ///     IGNORED: This requires HarmonyLib.CodeInstruction in the test project and
-    ///     real Harmony transpiler context, which is an integration-level concern.
-    ///     Verified in-game (see MS-2).
+    ///     Transpiler fail-soft contract: if <see cref="JobGiverPatch" /> cannot find the expected IL
+    ///     pattern in <c>JobGiver_OptimizeApparel.ApparelScoreRaw</c>, it returns the original
+    ///     instructions unchanged and logs an error rather than throwing. This test documents that
+    ///     contract so any future refactor of the transpiler must preserve the no-throw guarantee.
+    ///     IGNORED: Requires HarmonyLib transpiler context and real Harmony patch infrastructure,
+    ///     which is an integration-level concern verified in-game.
     /// </summary>
     [Test]
-    [NUnit.Framework.Description("AC-27: JobGiverPatch transpiler fail-soft contract")]
-    [Ignore("Integration-verified in-game via MS-2; requires HarmonyLib transpiler context")]
+    [Description("JobGiverPatch transpiler fail-soft: missing pattern returns original IL without throwing")]
+    [Ignore("Integration-verified in-game; requires HarmonyLib transpiler context")]
     public void JobGiverPatch_Transpiler_WithMissingPattern_ReturnsOriginalIL()
     {
         // Expected: When the IL pattern is not found, the transpiler logs an error

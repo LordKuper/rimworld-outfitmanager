@@ -54,8 +54,7 @@ public static class ApparelScoring
     private static float GetApparelWorkScore(Apparel apparel, Dictionary<string, float> workTypeWeights,
         RimWorldTime time)
     {
-        if (workTypeWeights == null || workTypeWeights.Count == 0) { return 0f; }
-        return GetApparelCache(apparel).GetWorkTypesScore(workTypeWeights, time);
+        return workTypeWeights.Count == 0 ? 0f : GetApparelCache(apparel).GetWorkTypesScore(workTypeWeights, time);
     }
 
     /// <summary>
@@ -69,16 +68,16 @@ public static class ApparelScoring
     public static float GetPawnApparelWorkScore(Pawn pawn, Apparel apparel)
     {
 #if DEBUG
-            Logger.LogMessage(
-                $"Calculating work score of '{apparel.LabelCapNoCount}' ({apparel.def.defName}) for '{pawn.Name}'");
+        Logger.LogMessage(
+            $"Calculating work score of '{apparel.LabelCapNoCount}' ({apparel.def.defName}) for '{pawn.Name}'");
 #endif
         Initialize();
         var workScore = GetApparelWorkScore(apparel, WorkTypeHelper.GetNormalizedWorkTypeWeights(pawn),
             RimWorldTime.GetHomeTime());
         var totalScore = workScore * Settings.WorkTypeScoreFactor;
 #if DEBUG
-            Logger.LogMessage(
-                $"Work score of '{apparel.LabelCapNoCount}' ({apparel.def.defName}) for '{pawn.Name}' = {workScore:F2} * {Settings.WorkTypeScoreFactor:F2} = {totalScore:F2}");
+        Logger.LogMessage(
+            $"Work score of '{apparel.LabelCapNoCount}' ({apparel.def.defName}) for '{pawn.Name}' = {workScore:F2} * {Settings.WorkTypeScoreFactor:F2} = {totalScore:F2}");
 #endif
         return totalScore;
     }

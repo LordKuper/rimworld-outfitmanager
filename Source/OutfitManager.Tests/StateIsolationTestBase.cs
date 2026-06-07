@@ -94,13 +94,6 @@ public abstract class StateIsolationTestBase
             var listType = fieldType.GetGenericTypeDefinition();
             if (listType == typeof(List<>))
             {
-                // Clone the list via reflection
-                var cloneMethod = fieldType.GetMethod("AddRange", new[] { typeof(IEnumerable) });
-                if (cloneMethod == null)
-                {
-                    cloneMethod = fieldType.GetMethod("Add");
-                }
-
                 var clonedList = Activator.CreateInstance(fieldType);
                 if (clonedList is IList clonedIList)
                 {

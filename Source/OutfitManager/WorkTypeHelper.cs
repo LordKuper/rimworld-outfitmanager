@@ -32,8 +32,8 @@ public static class WorkTypeHelper
         }
         var normalizedWorkTypeWeights = NormalizeWorkTypeWeights(workTypePriorities);
 #if DEBUG
-            Logger.LogMessage(
-                $"Normalized work type weights for {pawn.LabelShort}: {string.Join(", ", normalizedWorkTypeWeights.Select(w => $"{w.Key}={w.Value:F2}"))}");
+        Logger.LogMessage(
+            $"Normalized work type weights for {pawn.LabelShort}: {string.Join(", ", normalizedWorkTypeWeights.Select(w => $"{w.Key}={w.Value:F2}"))}");
 #endif
         return normalizedWorkTypeWeights;
     }

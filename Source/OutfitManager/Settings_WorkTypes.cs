@@ -17,7 +17,7 @@ public partial class Settings
 
     /// <summary>
     ///     The list of work type thing rules.
-    ///     Declared nullable because <see cref="Scribe_Collections.Look{T}" /> writes null back
+    ///     Declared nullable because <c>Scribe_Collections.Look</c> writes null back
     ///     on an empty load; the <see cref="InitializeWorkTypesSettings" /> path restores it via
     ///     the null-coalescing assignment before any caller accesses it.
     /// </summary>
@@ -83,7 +83,7 @@ public partial class Settings
         WorkTypeThingRuleWidget.DoWidgetTab(rect, ref _workTypesContentHeight, ref _scrollPosition, 2, WorkTypeRules,
             SelectedWorkTypeRule, rule => { SelectedWorkTypeRule = rule; }, UpdateWorkTypesAvailableItems,
             ref _workTypesThingBoxScrollPosition, WorkTypesAvailableItems,
-            ref _workTypesMapThingIconBoxScrollPosition, null);
+            ref _workTypesMapThingIconBoxScrollPosition);
     }
 
     /// <summary>

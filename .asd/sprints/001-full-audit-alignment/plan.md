@@ -94,14 +94,14 @@ The sprint is done when, and only when, all of the following hold:
 - [x] Characterization-test the transpiler fail-soft contract (pattern-not-found → returns original IL + logs, never throws) where the resolver fixture allows, or document it as integration-verified-in-game otherwise <!-- owner: test-engineer | ac: AC-27 | adr: adr-0001 | deps: T7 -->
 
 ### Task 9: Rule conformance — zero-warnings, language, logging
-- [ ] Enforce the zero-warnings policy: `TreatWarningsAsErrors=true` with a high warning level; confirm NetAnalyzers 9.0.0 reports 0 warnings on a clean build <!-- owner: backend-dev | ac: AC-28 | deps: T3, T4 -->
-- [ ] Confirm language policy holds: all docs in English; any new user-facing UI string lands in `Resources.Strings` (key from `ModId` + `nameof`) and the English Keyed XML in the same change <!-- owner: backend-dev | ac: AC-29 -->
-- [ ] Confirm logging conformance held: zero raw `Verse.Log.*` calls; all diagnostics route through the project `Logger` wrapping `Common.Logger` <!-- owner: backend-dev | ac: AC-30 -->
+- [x] Enforce the zero-warnings policy: `TreatWarningsAsErrors=true` with a high warning level; confirm NetAnalyzers 9.0.0 reports 0 warnings on a clean build <!-- owner: backend-dev | ac: AC-28 | deps: T3, T4 -->
+- [x] Confirm language policy holds: all docs in English; any new user-facing UI string lands in `Resources.Strings` (key from `ModId` + `nameof`) and the English Keyed XML in the same change <!-- owner: backend-dev | ac: AC-29 -->
+- [x] Confirm logging conformance held: zero raw `Verse.Log.*` calls; all diagnostics route through the project `Logger` wrapping `Common.Logger` <!-- owner: backend-dev | ac: AC-30 -->
 
 ### Task 10: End-to-end build/test, save-compat, published-mod flagging, doc reconciliation
-- [ ] Verify the solution builds end-to-end on the modern stack (`dotnet build` on the `.slnx`) and all unit tests pass <!-- owner: backend-dev | ac: AC-31 | deps: T3, T4, T9, T8 -->
-- [ ] Verify save compatibility: the Scribe keys (`WorkTypeScoreFactor`, `WorkTypeRules`) and the serialized shape of persisted settings remain stable across the migration <!-- owner: backend-dev | ac: AC-32 -->
-- [ ] Flag any user-visible (settings/UI/labels) or save-affecting change in the design ADR with its migration/communication implication (`backward_compat=none`, no shim required) <!-- owner: backend-dev | ac: AC-33 | adr: adr-0002 -->
+- [x] Verify the solution builds end-to-end on the modern stack (`dotnet build` on the `.slnx`) and all unit tests pass <!-- owner: backend-dev | ac: AC-31 | deps: T3, T4, T9, T8 -->
+- [x] Verify save compatibility: the Scribe keys (`WorkTypeScoreFactor`, `WorkTypeRules`) and the serialized shape of persisted settings remain stable across the migration <!-- owner: backend-dev | ac: AC-32 -->
+- [x] Flag any user-visible (settings/UI/labels) or save-affecting change in the design ADR with its migration/communication implication (`backward_compat=none`, no shim required) <!-- owner: backend-dev | ac: AC-33 | adr: adr-0002 -->
 - [x] Reconcile the deferred documentation-migration items (DM-1/DM-2: stack.html current-vs-target relabel, concept/stack draft→approved status, csharp-net48 nullable note) now that the migration code exists <!-- owner: backend-dev | ac: AC-5 -->
 
 ## Risks

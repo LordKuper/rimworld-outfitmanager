@@ -39,17 +39,11 @@ public class RimWorldAssemblyResolverFixture
                 "Check that RIMWORLD_DIR environment variable is set correctly.");
         }
 
-        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+        AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
         {
             var assemblyName = args.Name.Split(',')[0];
             var assemblyPath = Path.Combine(rimWorldManagedDir, $"{assemblyName}.dll");
-
-            if (File.Exists(assemblyPath))
-            {
-                return Assembly.LoadFrom(assemblyPath);
-            }
-
-            return null;
+            return File.Exists(assemblyPath) ? Assembly.LoadFrom(assemblyPath) : null;
         };
     }
 }

@@ -42,8 +42,8 @@ internal class ApparelCache : ThingCache
     {
         var score = _workTypeScores.TryGetValue(workTypeDefName, out var cached) ? cached : 0f;
 #if DEBUG
-            Logger.LogMessage(
-                $"Work type score for '{Thing.LabelCapNoCount}' ({Thing.def?.defName}) and work type '{workTypeDefName}' = {score:F2}");
+        Logger.LogMessage(
+            $"Work type score for '{Thing.LabelCapNoCount}' ({Thing.def?.defName}) and work type '{workTypeDefName}' = {score:F2}");
 #endif
         return score;
     }

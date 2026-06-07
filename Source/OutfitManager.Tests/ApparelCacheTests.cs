@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using Verse;
-
 namespace LordKuper.OutfitManager.Tests;
 
 /// <summary>
@@ -14,7 +11,7 @@ namespace LordKuper.OutfitManager.Tests;
 public class ApparelCacheTests : StateIsolationTestBase
 {
     /// <summary>
-    ///     AC-26: GetWorkTypesScore with empty weights returns 0.
+    ///     GetWorkTypesScore with empty weights returns 0.
     ///     IGNORED: Requires live RimWorld Apparel context.
     /// </summary>
     [Test]
@@ -26,7 +23,7 @@ public class ApparelCacheTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     AC-26: GetWorkTypesScore with single work type computes weighted score.
+    ///     GetWorkTypesScore with single work type computes the weighted score.
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
@@ -38,7 +35,7 @@ public class ApparelCacheTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     AC-26: GetWorkTypesScore with multiple work types sums weighted contributions.
+    ///     GetWorkTypesScore with multiple work types sums weighted contributions.
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
@@ -50,7 +47,7 @@ public class ApparelCacheTests : StateIsolationTestBase
     }
 
     /// <summary>
-    ///     AC-26: Cached work type scores are reused within cache window.
+    ///     Cached work type scores are reused within the cache window (same quadrum/day).
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
