@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: current tech stack reference (languages, frameworks, runtime, infra)
+  excludes: build commands, architecture decisions, deployment ops
+  delegates_to: commands.yaml (commands), adr/ (decisions), runbooks (ops)
+provenance: reverse-engineered
+source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling standard) + Source/OutfitManager.csproj + design/product/concept.html
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="Stack">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="—">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-07">
+  <meta name="responsibility" content="current tech stack reference (languages, frameworks, runtime, infra)">
+  <meta name="provenance" content="reverse-engineered">
+  <meta name="source" content="../rimworld-equipmentmanager/design/architecture/stack.html (sibling standard) + Source/OutfitManager.csproj + design/product/concept.html">
+  <title>Outfit Manager — Tech Stack</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+    table.tech-table .ver { font-variant-numeric: tabular-nums; color: var(--muted); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+    .chip.risk-high { background: var(--code-bg); color: var(--danger); border-color: var(--danger); }
+    .chip.risk-medium { background: var(--code-bg); color: var(--warn); border-color: var(--warn); }
+    .chip.risk-low { background: var(--code-bg); color: var(--ok); border-color: var(--ok); }
+    .principle-list { list-style: none; padding: 0; }
+    .principle-list li { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--info); border-radius: 6px; padding: 8px 12px; margin: 6px 0; }
+    .principle-list li strong { color: var(--info); }
+    @media print { nav.toc { background: none; border: 1px solid var(--border); } a { color: inherit; text-decoration: none; } footer { page-break-before: always; } tr, li { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#current-vs-target">Current vs target</a></li>
+        <li><a href="#languages">Languages</a></li>
+        <li><a href="#frameworks">Frameworks / libraries</a></li>
+        <li><a href="#runtime-infrastructure">Runtime / infrastructure</a></li>
+        <li><a href="#tooling">Tooling</a></li>
+        <li><a href="#constraints">Constraints</a></li>
+        <li><a href="#knowledge-gap">Knowledge-gap risk</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>Stack</span>
+          <span>project</span>
+          <span class="status-draft">draft</span>
+          <span class="provenance-reverse-engineered">reverse-engineered — Source/OutfitManager.csproj + EM sibling standard</span>
+        </div>
+        <h1>Outfit Manager — Tech Stack</h1>
+        <div class="stats"><span class="chip">RimWorld mod</span><span class="chip">net48</span><span class="chip">versions verified 2026-06-07</span></div>
+      </header>
+      <main>
+
+<section id="current-vs-target" class="callout warn">
+  <h2>Current vs target state</h2>
+  <p><b>This document describes the TARGET stack after migration, not the current legacy build.</b> Outfit Manager is a published Steam Workshop mod (id <code>LordKuper.OutfitManager</code>, workshop <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1984694952">1984694952</a>) whose source currently ships an older toolchain. The target normalizes OM onto the same standard as the sibling <a href="../../rimworld-equipmentmanager/design/architecture/stack.html">EquipmentManager</a> repo.</p>
+  <table class="tech-table">
+    <thead><tr><th>Aspect</th><th>Current (legacy, as-built)</th><th>Target (this doc)</th></tr></thead>
+    <tbody>
+      <tr><td>Project format</td><td>Legacy non-SDK <code>.csproj</code> (<code>ToolsVersion 15.0</code>, <code>Microsoft.Common.props</code> import, explicit <code>Compile Include</code> list)</td><td>SDK-style <code>.csproj</code> with implicit globbing</td></tr>
+      <tr><td>Package management</td><td><code>packages.config</code> + <code>packages\</code> folder; analyzers wired via raw <code>&lt;Analyzer Include&gt;</code> paths</td><td><code>PackageReference</code></td></tr>
+      <tr><td>Harmony (compile)</td><td>HintPath to <code>packages\Lib.Harmony.2.3.6\lib\net48\0Harmony.dll</code> (<b>2.3.6</b>)</td><td><code>Lib.Harmony</code> <b>2.4.2</b> compile-only <code>PackageReference</code></td></tr>
+      <tr><td>Test project</td><td><b>None</b> — no test project, no test framework</td><td><code>OutfitManager.Tests</code> (NUnit 4 + FluentAssertions 7 + Test SDK)</td></tr>
+      <tr><td>Solution</td><td><code>Source/OutfitManager.sln</code> (legacy)</td><td><code>Source/OutfitManager.slnx</code></td></tr>
+      <tr><td>Nullability</td><td>Not enabled (no <code>&lt;Nullable&gt;</code>); JetBrains <code>[NotNull]</code> annotations in use</td><td><code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> on all projects</td></tr>
+      <tr><td>Optional-mod integrations</td><td>None (no SimpleSidearms / CE / VFE)</td><td>None (unchanged — OM has no optional integrations)</td></tr>
+    </tbody>
+  </table>
+  <p>Legacy migration is a <b>prerequisite</b> for adopting the target tooling rows below: the SDK-style/<code>PackageReference</code>/<code>.slnx</code>/test-project moves land first, then the version pins apply.</p>
+</section>
+
+<section id="languages">
+  <h2>Languages</h2>
+  <table class="tech-table">
+    <thead><tr><th>Language</th><th>Version</th><th>Used in</th></tr></thead>
+    <tbody>
+      <tr><td><strong>C#</strong></td><td class="ver"><code>LangVersion latest</code>, compiled for <code>net48</code></td><td><span class="chip area">production + tests</span></td></tr>
+    </tbody>
+  </table>
+  <p><b>Nullability (target)</b>: <code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> on both the production project (<code>OutfitManager.csproj</code>) and the future test project (<code>OutfitManager.Tests.csproj</code>). The current legacy build does <em>not</em> enable nullable and still uses JetBrains nullability attributes (<code>[NotNull]</code> appears in <code>ApparelCache.cs</code>). The target migrates to C# nullable reference types and retains <code>using JetBrains.Annotations;</code> only where a non-nullability attribute (<code>[UsedImplicitly]</code>) is still referenced (e.g. <code>OutfitManagerMod.cs</code>, <code>Patches/JobGiverPatch.cs</code>, <code>Settings.cs</code>). The current source already uses modern C# syntax (collection expressions <code>[]</code>, file-scoped namespaces, target-typed <code>new()</code>), confirming <code>LangVersion latest</code> compatibility.</p>
+</section>
+
+<section id="frameworks">
+  <h2>Frameworks / libraries</h2>
+  <table class="tech-table">
+    <thead><tr><th>Name</th><th>Version</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>RimWorld <code>Assembly-CSharp</code></strong></td><td class="ver">game-bound (1.6)</td><td>Core game API the mod patches/extends; HintPath reference, not NuGet. <code>supportedVersions</code> = 1.6 only</td></tr>
+      <tr><td><strong>UnityEngine.CoreModule</strong></td><td class="ver">game-bound</td><td>Unity runtime types (<code>Rect</code>, <code>Vector2</code>, <code>Mathf</code>, <code>Event</code>) used by settings UI</td></tr>
+      <tr><td><strong>UnityEngine.IMGUIModule</strong></td><td class="ver">game-bound</td><td>Immediate-mode GUI for the mod settings window (General + Work Types tabs)</td></tr>
+      <tr><td><strong>UnityEngine.TextRenderingModule</strong></td><td class="ver">game-bound</td><td>Text rendering for UI labels/tooltips</td></tr>
+      <tr><td><strong>Lib.Harmony</strong></td><td class="ver">2.4.2 (compile-only; legacy is 2.3.6)</td><td>Runtime method patching; single transpiler on <code>JobGiver_OptimizeApparel.ApparelScoreRaw</code>. Runtime copy supplied by the Harmony mod</td></tr>
+      <tr><td><strong>LordKuper.Common</strong></td><td class="ver">upstream, 1.6 (compile-only)</td><td>Shared logging / time / cache / work-type-rule / UI-widget library; upstream integration contract, not forked</td></tr>
+    </tbody>
+  </table>
+  <p>OM has <b>no</b> optional-mod integrations — no SimpleSidearms, no Combat Extended, no Vanilla Factions Expanded references (hard or reflective). This is a deliberate scope difference from EquipmentManager.</p>
+</section>
+
+<section id="runtime-infrastructure">
+  <h2>Runtime / infrastructure</h2>
+  <table class="tech-table">
+    <thead><tr><th>Component</th><th>Version</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><strong>.NET Framework runtime</strong></td><td class="ver">net48 (Mono, hosted by RimWorld)</td><td><span class="chip area">execution target</span></td></tr>
+      <tr><td><strong>RimWorld game</strong></td><td class="ver">1.6</td><td><span class="chip area">host process; loads from 1.6/Assemblies/</span></td></tr>
+      <tr><td><strong>Harmony (mod)</strong></td><td class="ver">brrainz.harmony (workshop 2009463077)</td><td><span class="chip area">hard runtime dependency (modDependency + loadAfter)</span></td></tr>
+      <tr><td><strong>LordKuper.Common (mod)</strong></td><td class="ver">workshop 3531352422</td><td><span class="chip area">hard runtime dependency (modDependency + loadAfter)</span></td></tr>
+      <tr><td><strong>Steam Workshop</strong></td><td class="ver">id 1984694952</td><td><span class="chip area">distribution channel (published)</span></td></tr>
+    </tbody>
+  </table>
+  <p><b>About.xml is authoritative and minimal</b>: exactly two runtime dependencies — <code>brrainz.harmony</code> and <code>LordKuper.Common</code> — each declared in <code>&lt;modDependencies&gt;</code> AND listed in <code>&lt;loadAfter&gt;</code>. No <code>modDependenciesByVersion</code>, no soft <code>loadAfter</code> beyond those two, no incompatibilities. (Contrast EM, which has version-scoped deps and VFE/CE soft-ordering.)</p>
+</section>
+
+<section id="tooling">
+  <h2>Tooling</h2>
+  <table class="tech-table">
+    <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>dotnet SDK</strong> <span class="ver">10.0.300</span></td><td>MSBuild build/test/format driver (machine-resolved, no <code>global.json</code>); builds the <code>OutfitManager.slnx</code> solution (target)</td></tr>
+      <tr><td><strong>MSBuild (via dotnet)</strong></td><td><code>build: dotnet build Source/OutfitManager.slnx -c Release</code></td></tr>
+      <tr><td><strong>dotnet test</strong></td><td><code>dotnet test Source/OutfitManager.slnx</code> (once the test project exists)</td></tr>
+      <tr><td><strong>dotnet format</strong></td><td><code>lint: dotnet format … --verify-no-changes</code>; fix: <code>dotnet format …</code></td></tr>
+      <tr><td><strong>Microsoft.CodeAnalysis.NetAnalyzers</strong> <span class="ver">9.0.0</span></td><td>Roslyn CA analyzers (already referenced in the legacy csproj via raw <code>&lt;Analyzer Include&gt;</code> paths). <b>Pin retained at 9.0.0</b> — do not adopt 10.0.300; the .NET 10 band adds rules that would break the build under warnings-as-errors</td></tr>
+      <tr><td><strong>JetBrains ReSharper GlobalTools (<code>jb</code>)</strong> <span class="ver">2026.1.2</span></td><td><code>jb cleanupcode</code> (pre-build) + <code>jb inspectcode</code> → SARIF (post-lint; verify zero error/warning), against <code>OutfitManager.slnx</code></td></tr>
+      <tr><td><strong>Microsoft.NET.Test.Sdk</strong> <span class="ver">18.6.0</span></td><td>Test host/platform (target test project)</td></tr>
+      <tr><td><strong>NUnit</strong> <span class="ver">4.6.1</span></td><td>Test framework (4.x; asserts via FluentAssertions, not <code>Assert.*</code>)</td></tr>
+      <tr><td><strong>NUnit3TestAdapter</strong> <span class="ver">6.2.0</span></td><td>VSTest adapter (runs NUnit 4 tests despite the "3" in the name)</td></tr>
+      <tr><td><strong>FluentAssertions</strong> <span class="ver">7.2.2</span></td><td>Assertion library; <b>pinned to 7.x (Apache-2.0)</b> — 8.x is commercially licensed</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="constraints" class="callout warn">
+  <h2>Constraints</h2>
+  <ul>
+    <li><b>Legacy migration is a prerequisite.</b> The target tooling (SDK-style csproj, <code>PackageReference</code>, <code>.slnx</code>, test project, Harmony 2.4.2) requires migrating off the current non-SDK <code>.csproj</code> + <code>packages.config</code> + <code>.sln</code> + Harmony 2.3.6 first.</li>
+    <li><b>NetAnalyzers pinned to 9.0.0.</b> Do NOT bump to 10.0.300 — the .NET 10 analyzer band adds CA rules that fail the build under warnings-as-errors. The pin is deliberate (per user decision).</li>
+    <li><b>FluentAssertions pinned to 7.x (Apache-2.0).</b> Never upgrade to 8.x — 8.x is commercially licensed (Xceed). License-driven hard constraint.</li>
+    <li><b>net48 target only.</b> Dictated by RimWorld's Mono runtime; cannot target modern .NET runtimes.</li>
+    <li><b>RimWorld assemblies are not NuGet.</b> <code>Assembly-CSharp</code> + Unity modules are HintPath references resolved from a local RimWorld install; build requires the game installed.</li>
+    <li><b>LordKuper.Common is upstream, read-only.</b> Consume its public surface; do not fork (resolved from <code>..\..\rimworld-common\1.6\Assemblies</code>).</li>
+    <li><b>Transpiler must fail soft.</b> The single Harmony transpiler on <code>JobGiver_OptimizeApparel.ApparelScoreRaw</code> searches for an IL anchor (the <code>Apparel.GetSpecialApparelScoreOffset</code> call site); if the anchor is not found it logs an error and returns the original IL unchanged rather than throwing — vanilla scoring stays intact.</li>
+    <li><b>Compile-only references must not ship.</b> Harmony and LordKuper.Common are <code>Private=False</code> / compile-only — runtime copies come from the player's installed mods.</li>
+    <li><b>Warnings-as-errors (target).</b> Build clean under <code>TreatWarningsAsErrors</code> — any analyzer warning fails the build.</li>
+    <li><b>Published mod.</b> Live on Steam Workshop (1984694952); changes affect existing subscribers and saved games (<code>ExposeData</code> / <code>Scribe_*</code> compatibility matters).</li>
+  </ul>
+</section>
+
+<section id="knowledge-gap" class="hero">
+  <h2>Knowledge-gap risk</h2>
+  <p>Per-tech risk vs LLM training cutoff (all versions verified latest-stable / pinned on 2026-06-07). Detailed notes per tech live in <code>design/architecture/tech-reference/</code>.</p>
+  <ul>
+    <li><span class="chip risk-high">HIGH</span> <strong>LordKuper.Common</strong> — private upstream, zero training coverage; consumed surface grep-confirmed only (Logger, RimWorldTime, ThingCache, WorkTypeThingRule, UI.Tabs/Fields/Widgets.WorkTypeThingRuleWidget).</li>
+    <li><span class="chip risk-medium">MEDIUM</span> RimWorld / Unity API (game-bound, 1.6) · NUnit 4.x (API differs from 3.x) · dotnet SDK 10.x toolchain · jb 2026.1.2 CLI/SARIF · NetAnalyzers pin (9.0.0 vs latest 10.0.300) · legacy→SDK csproj migration (project-format change).</li>
+    <li><span class="chip risk-low">LOW</span> C# / net48 · Lib.Harmony 2.4.2 (single transpiler; legacy was 2.3.6) · Microsoft.NET.Test.Sdk 18.6.0 · NUnit3TestAdapter 6.2.0 · FluentAssertions 7.2.2 usage (HIGH only if upgraded past 7.x unaware).</li>
+  </ul>
+  <p><b>Overall: HIGH</b> (driven by the LordKuper.Common upstream dependency).</p>
+</section>
+
+      </main>
+      <footer>by asd-architect | 2026-06-07 | sprint —</footer>
+    </div>
+  </div>
+</body>
+</html>
