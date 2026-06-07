@@ -56,7 +56,7 @@ public partial class Settings
     {
         var y = 0f;
         y += DoWorkTypeScoreFactorField(rect);
-        if (Event.current.type == EventType.Layout) { _generalContentHeight = y; }
+        if (Event.current.type == EventType.Layout) _generalContentHeight = y;
     }
 
     /// <summary>

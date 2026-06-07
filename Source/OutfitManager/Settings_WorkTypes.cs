@@ -104,47 +104,45 @@ public partial class Settings
         foreach (var rule in _workTypeRules.ToList())
         {
             // WorkTypeDefName may be null on a corrupt save entry; skip rather than crash
-            if (rule.WorkTypeDefName == null || !existingRules.Add(rule.WorkTypeDefName))
-            {
-                _workTypeRules.Remove(rule);
-            }
-            foreach (var statWeight in rule.StatWeights) { statWeight.Protected = false; }
+            if (rule.WorkTypeDefName == null || !existingRules.Add(rule.WorkTypeDefName)) _workTypeRules.Remove(rule);
+            foreach (var statWeight in rule.StatWeights) statWeight.Protected = false;
         }
+
         foreach (var workType in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder)
         {
-            if (existingRules.Contains(workType.defName)) { continue; }
+            if (existingRules.Contains(workType.defName)) continue;
             _workTypeRules.Add(new WorkTypeThingRule(workType.defName));
         }
+
         foreach (var defaultRule in WorkTypeThingRule.DefaultRules)
         {
             var rule = _workTypeRules.FirstOrDefault(r =>
                 string.Equals(r.WorkTypeDefName, defaultRule.WorkTypeDefName, StringComparison.OrdinalIgnoreCase));
-            if (rule == null) { _workTypeRules.Add(defaultRule); }
+            if (rule == null)
+                _workTypeRules.Add(defaultRule);
             else
-            {
                 foreach (var defaultStatWeight in defaultRule.StatWeights)
                 {
                     var statWeight = rule.StatWeights.FirstOrDefault(sw =>
-                        string.Equals(sw.StatDefName, defaultStatWeight.StatDefName, StringComparison.OrdinalIgnoreCase));
+                        string.Equals(sw.StatDefName, defaultStatWeight.StatDefName,
+                            StringComparison.OrdinalIgnoreCase));
                     if (statWeight == null)
                     {
                         // Only apply the default weight when the backing StatDef resolved successfully
                         if (defaultStatWeight.StatDef != null)
-                        {
                             rule.SetStatWeight(defaultStatWeight.StatDef, defaultStatWeight.Weight);
-                        }
                     }
-                    else { statWeight.Protected = defaultStatWeight.Protected; }
+                    else
+                    {
+                        statWeight.Protected = defaultStatWeight.Protected;
+                    }
                 }
-            }
         }
 #if DEBUG
         Logger.LogMessage("Initializing work type rules...");
         foreach (var rule in _workTypeRules)
-        {
             Logger.LogMessage(
                 $"{rule.Label} - {string.Join(", ", rule.StatWeights.Select(sw => $"{(sw.Protected ? "*" : string.Empty)}{sw.StatDefName}={sw.Weight:F2}"))}");
-        }
 #endif
     }
 
@@ -154,7 +152,7 @@ public partial class Settings
     private static void UpdateWorkTypesAvailableItems()
     {
         WorkTypesAvailableItems.Clear();
-        if (SelectedWorkTypeRule == null) { return; }
+        if (SelectedWorkTypeRule == null) return;
         WorkTypesAvailableItems.AddRange(SelectedWorkTypeRule.GetGloballyAvailableItems());
     }
 }

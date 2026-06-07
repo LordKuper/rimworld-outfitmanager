@@ -79,7 +79,7 @@ public partial class Settings : ModSettings
     /// </summary>
     private static void Initialize()
     {
-        if (_isInitialized) { return; }
+        if (_isInitialized) return;
         _isInitialized = true;
         InitializeTabs();
         InitializeGeneralSettings();

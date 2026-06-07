@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using RimWorld;
-using Verse;
 
 namespace LordKuper.OutfitManager.Tests;
 
@@ -62,12 +61,8 @@ public abstract class StateIsolationTestBase
     public void RestoreState()
     {
         foreach (var entry in _stateSnapshot)
-        {
             if (!RestoreField(typeof(ApparelScoring), entry.Key, entry.Value.FieldType, entry.Value.Value))
-            {
                 RestoreField(typeof(Settings), entry.Key, entry.Value.FieldType, entry.Value.Value);
-            }
-        }
     }
 
     /// <summary>
@@ -78,17 +73,18 @@ public abstract class StateIsolationTestBase
     {
         var field = type.GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
         if (field == null)
-        {
             throw new InvalidOperationException(
                 $"StateIsolationTestBase.SnapshotField: Field '{fieldName}' not found on type {type.FullName}. " +
                 "Check that the field exists and is not being renamed or removed.");
-        }
 
         var value = field.GetValue(null);
         var fieldType = field.FieldType;
 
-        // For collections, store a shallow copy to detect mutations
-        object? snapshotValue = value;
+        // For collections, store a shallow copy to detect mutations.
+        // The branches test heterogeneous conditions (an IList of a generic list type, then a
+        // specific ConditionalWeakTable type), so a switch would not read more clearly here.
+        var snapshotValue = value;
+        // ReSharper disable once ConvertIfStatementToSwitchStatement
         if (value is IList sourceList && fieldType.IsGenericType)
         {
             var listType = fieldType.GetGenericTypeDefinition();
@@ -97,10 +93,7 @@ public abstract class StateIsolationTestBase
                 var clonedList = Activator.CreateInstance(fieldType);
                 if (clonedList is IList clonedIList)
                 {
-                    foreach (var item in sourceList)
-                    {
-                        clonedIList.Add(item);
-                    }
+                    foreach (var item in sourceList) clonedIList.Add(item);
 
                     snapshotValue = clonedIList;
                 }
@@ -122,7 +115,7 @@ public abstract class StateIsolationTestBase
     private bool RestoreField(Type type, string fieldName, Type fieldType, object? snapshotValue)
     {
         var field = type.GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-        if (field == null) { return false; }
+        if (field == null) return false;
 
         if (snapshotValue is "ConditionalWeakTable")
         {
@@ -137,10 +130,7 @@ public abstract class StateIsolationTestBase
             if (currentValue is IList currentList && snapshotValue is IList snapshotList)
             {
                 currentList.Clear();
-                foreach (var item in snapshotList)
-                {
-                    currentList.Add(item);
-                }
+                foreach (var item in snapshotList) currentList.Add(item);
             }
         }
         else

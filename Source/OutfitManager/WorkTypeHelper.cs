@@ -20,16 +20,17 @@ public static class WorkTypeHelper
     /// </returns>
     public static Dictionary<string, float> GetNormalizedWorkTypeWeights(Pawn pawn)
     {
-        if (pawn.workSettings == null) { return new Dictionary<string, float>(); }
+        if (pawn.workSettings == null) return new Dictionary<string, float>();
         var workTypePriorities = new Dictionary<string, int>();
         foreach (var workType in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.Where(wt =>
                      pawn.workSettings.WorkIsActive(wt)))
         {
             var rule = Settings.WorkTypeRules.FirstOrDefault(r =>
                 string.Equals(r.WorkTypeDefName, workType.defName, StringComparison.OrdinalIgnoreCase));
-            if (rule == null || !rule.StatWeights.Any()) { continue; }
+            if (rule == null || !rule.StatWeights.Any()) continue;
             workTypePriorities[workType.defName] = pawn.workSettings.GetPriority(workType);
         }
+
         var normalizedWorkTypeWeights = NormalizeWorkTypeWeights(workTypePriorities);
 #if DEBUG
         Logger.LogMessage(
@@ -54,16 +55,20 @@ public static class WorkTypeHelper
     internal static Dictionary<string, float> NormalizeWorkTypeWeights(
         IReadOnlyDictionary<string, int> workTypePriorities)
     {
-        if (workTypePriorities.Count == 0) { return new Dictionary<string, float>(); }
+        if (workTypePriorities.Count == 0) return new Dictionary<string, float>();
         var wpMin = workTypePriorities.Min(wp => wp.Value);
         var wpMax = workTypePriorities.Max(wp => wp.Value);
         int wpRange;
-        if (wpMin == wpMax) { wpRange = 0; }
+        if (wpMin == wpMax)
+        {
+            wpRange = 0;
+        }
         else
         {
             wpMax++;
             wpRange = wpMax - wpMin;
         }
+
         var workTypeWeights = workTypePriorities.ToDictionary(wp => wp.Key,
             wp => wpRange == 0 ? 1f : 1f - (float)(wp.Value - wpMin) / wpRange);
         var weightSum = workTypeWeights.Sum(w => w.Value);

@@ -24,20 +24,16 @@ public class RimWorldAssemblyResolverFixture
         var rimWorldManagedDirAttribute = testAssembly.GetCustomAttribute<AssemblyMetadataAttribute>();
         if (rimWorldManagedDirAttribute?.Key != "RimWorldManagedDir" ||
             string.IsNullOrEmpty(rimWorldManagedDirAttribute.Value))
-        {
             throw new InvalidOperationException(
                 "RimWorldAssemblyResolverFixture: AssemblyMetadata 'RimWorldManagedDir' not found or empty. " +
                 "Check the test project file for <AssemblyMetadata Include=\"RimWorldManagedDir\" Value=\"...\" />.");
-        }
 
         var rimWorldManagedDir = rimWorldManagedDirAttribute.Value;
 
         if (!Directory.Exists(rimWorldManagedDir))
-        {
             throw new DirectoryNotFoundException(
                 $"RimWorldAssemblyResolverFixture: RimWorldManagedDir '{rimWorldManagedDir}' does not exist. " +
                 "Check that RIMWORLD_DIR environment variable is set correctly.");
-        }
 
         AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
         {

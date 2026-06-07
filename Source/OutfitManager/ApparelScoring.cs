@@ -90,7 +90,7 @@ public static class ApparelScoring
     /// </summary>
     private static void Initialize()
     {
-        if (_isInitialized) { return; }
+        if (_isInitialized) return;
         InitializeStatRanges();
         _isInitialized = true;
     }
@@ -101,8 +101,7 @@ public static class ApparelScoring
     private static void InitializeStatRanges()
     {
         foreach (var def in DefDatabase<ThingDef>.AllDefs.Where(def => def.IsApparel))
-        {
-            foreach (var rule in Settings.WorkTypeRules) { rule.GetThingDefScore(def); }
-        }
+        foreach (var rule in Settings.WorkTypeRules)
+            rule.GetThingDefScore(def);
     }
 }

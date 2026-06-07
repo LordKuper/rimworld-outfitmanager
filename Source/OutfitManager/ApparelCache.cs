@@ -71,16 +71,17 @@ internal class ApparelCache : ThingCache
     /// </returns>
     public override bool Update(RimWorldTime time)
     {
-        if (!base.Update(time)) { return false; }
+        if (!base.Update(time)) return false;
         _workTypeScores.Clear();
         foreach (var workTypeDef in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder)
         {
             var score = 0f;
             var workTypeRule =
                 Settings.WorkTypeRules.FirstOrDefault(rule => rule.WorkTypeDefName == workTypeDef.defName);
-            if (workTypeRule != null) { score += workTypeRule.GetThingScore(Thing); }
+            if (workTypeRule != null) score += workTypeRule.GetThingScore(Thing);
             _workTypeScores.Add(workTypeDef.defName, score);
         }
+
         return true;
     }
 }
