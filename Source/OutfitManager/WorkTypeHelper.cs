@@ -30,6 +30,30 @@ public static class WorkTypeHelper
             if (rule == null || !rule.StatWeights.Any()) { continue; }
             workTypePriorities[workType.defName] = pawn.workSettings.GetPriority(workType);
         }
+        var normalizedWorkTypeWeights = NormalizeWorkTypeWeights(workTypePriorities);
+#if DEBUG
+            Logger.LogMessage(
+                $"Normalized work type weights for {pawn.LabelShort}: {string.Join(", ", normalizedWorkTypeWeights.Select(w => $"{w.Key}={w.Value:F2}"))}");
+#endif
+        return normalizedWorkTypeWeights;
+    }
+
+    /// <summary>
+    ///     Converts a raw work-type priority map into normalized weights that sum to 1.
+    ///     Priority values follow RimWorld's convention: a lower number means higher priority.
+    ///     The formula inverts priorities relative to the observed range so that a higher-priority
+    ///     work type receives a greater weight. When all priorities are equal (range is zero),
+    ///     weights are distributed uniformly.
+    /// </summary>
+    /// <param name="workTypePriorities">
+    ///     Map of work type def names to their raw priority values. An empty map produces an empty result.
+    /// </param>
+    /// <returns>
+    ///     A dictionary mapping each work type def name to its normalized weight (sum of values is 1).
+    /// </returns>
+    internal static Dictionary<string, float> NormalizeWorkTypeWeights(
+        IReadOnlyDictionary<string, int> workTypePriorities)
+    {
         if (workTypePriorities.Count == 0) { return new Dictionary<string, float>(); }
         var wpMin = workTypePriorities.Min(wp => wp.Value);
         var wpMax = workTypePriorities.Max(wp => wp.Value);
@@ -43,11 +67,6 @@ public static class WorkTypeHelper
         var workTypeWeights = workTypePriorities.ToDictionary(wp => wp.Key,
             wp => wpRange == 0 ? 1f : 1f - (float)(wp.Value - wpMin) / wpRange);
         var weightSum = workTypeWeights.Sum(w => w.Value);
-        var normalizedWorkTypeWeights = workTypeWeights.ToDictionary(w => w.Key, w => w.Value / weightSum);
-#if DEBUG
-            Logger.LogMessage(
-                $"Normalized work type weights for {pawn.LabelShort}: {string.Join(", ", normalizedWorkTypeWeights.Select(w => $"{w.Key}={w.Value:F2}"))}");
-#endif
-        return normalizedWorkTypeWeights;
+        return workTypeWeights.ToDictionary(w => w.Key, w => w.Value / weightSum);
     }
 }
