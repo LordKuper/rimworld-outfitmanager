@@ -77,10 +77,10 @@ The sprint is done when, and only when, all of the following hold:
 - [x] Verify continued consumption of Common's public surface (`WorkTypeThingRule`, `ThingCache`, `WorkTypeThingRuleWidget`, `RimWorldTime`, `StatWeight`, `Common.UI`, `Common.Logger`) is contract-correct and public-surface-only (no forking) <!-- owner: backend-dev | ac: AC-17 -->
 
 ### Task 6: Behaviour-neutral simplification and optimization
-- [ ] Consolidate the redundant `Settings.WorkTypeRules.FirstOrDefault(...)` lookup duplicated across `ApparelCache.Update` and `ApparelCache.GetWorkTypeScore` (single path and/or index rules by defName) without changing observable behaviour <!-- owner: backend-dev | ac: AC-18 -->
-- [ ] Correct the `ApparelScoring.Initialize()` ordering fragility so a mid-init failure cannot leave `_isInitialized` set with partially-seeded ranges <!-- owner: backend-dev | ac: AC-19 -->
-- [ ] Confirm all W5 changes are behaviour-neutral against the characterization tests from T8 (apparel-pick outcomes unchanged for a given pawn/apparel/settings configuration) <!-- owner: backend-dev | ac: AC-20 | deps: T8 -->
-- [ ] Preserve the existing sound-caching patterns (`ConditionalWeakTable` weak keys, quadrum cache window); do not "optimize" them into a regression <!-- owner: backend-dev | ac: AC-21 -->
+- [x] Consolidate the redundant `Settings.WorkTypeRules.FirstOrDefault(...)` lookup duplicated across `ApparelCache.Update` and `ApparelCache.GetWorkTypeScore` (single path and/or index rules by defName) without changing observable behaviour <!-- owner: backend-dev | ac: AC-18 -->
+- [x] Correct the `ApparelScoring.Initialize()` ordering fragility so a mid-init failure cannot leave `_isInitialized` set with partially-seeded ranges <!-- owner: backend-dev | ac: AC-19 -->
+- [x] Confirm all W5 changes are behaviour-neutral against the characterization tests from T8 (apparel-pick outcomes unchanged for a given pawn/apparel/settings configuration) <!-- owner: backend-dev | ac: AC-20 | deps: T8 -->
+- [x] Preserve the existing sound-caching patterns (`ConditionalWeakTable` weak keys, quadrum cache window); do not "optimize" them into a regression <!-- owner: backend-dev | ac: AC-21 -->
 
 ### Task 7: Stand up the unit test project with isolation and assembly-resolver infrastructure
 - [x] Create the `Source/OutfitManager.Tests/` SDK-style project; ensure it builds and is included in the `.slnx` <!-- owner: test-engineer | ac: AC-22 | deps: T2 -->
@@ -102,7 +102,7 @@ The sprint is done when, and only when, all of the following hold:
 - [ ] Verify the solution builds end-to-end on the modern stack (`dotnet build` on the `.slnx`) and all unit tests pass <!-- owner: backend-dev | ac: AC-31 | deps: T3, T4, T9, T8 -->
 - [ ] Verify save compatibility: the Scribe keys (`WorkTypeScoreFactor`, `WorkTypeRules`) and the serialized shape of persisted settings remain stable across the migration <!-- owner: backend-dev | ac: AC-32 -->
 - [ ] Flag any user-visible (settings/UI/labels) or save-affecting change in the design ADR with its migration/communication implication (`backward_compat=none`, no shim required) <!-- owner: backend-dev | ac: AC-33 | adr: adr-0002 -->
-- [ ] Reconcile the deferred documentation-migration items (DM-1/DM-2: stack.html current-vs-target relabel, concept/stack draft→approved status, csharp-net48 nullable note) now that the migration code exists <!-- owner: backend-dev | ac: AC-5 -->
+- [x] Reconcile the deferred documentation-migration items (DM-1/DM-2: stack.html current-vs-target relabel, concept/stack draft→approved status, csharp-net48 nullable note) now that the migration code exists <!-- owner: backend-dev | ac: AC-5 -->
 
 ## Risks
 

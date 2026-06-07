@@ -15,7 +15,7 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
   <meta name="doc-type" content="Stack">
   <meta name="subsystem" content="project">
   <meta name="sprint-id" content="—">
-  <meta name="status" content="draft">
+  <meta name="status" content="approved">
   <meta name="updated" content="2026-06-07">
   <meta name="responsibility" content="current tech stack reference (languages, frameworks, runtime, infra)">
   <meta name="provenance" content="reverse-engineered">
@@ -103,7 +103,7 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
     <nav class="toc" aria-label="Table of contents">
       <p class="toc-title">Contents</p>
       <ol>
-        <li><a href="#current-vs-target">Current vs target</a></li>
+        <li><a href="#migration-history">Migration history</a></li>
         <li><a href="#languages">Languages</a></li>
         <li><a href="#frameworks">Frameworks / libraries</a></li>
         <li><a href="#runtime-infrastructure">Runtime / infrastructure</a></li>
@@ -117,7 +117,7 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
         <div class="badges">
           <span>Stack</span>
           <span>project</span>
-          <span class="status-draft">draft</span>
+          <span class="status-approved">approved</span>
           <span class="provenance-reverse-engineered">reverse-engineered — Source/OutfitManager.csproj + EM sibling standard</span>
         </div>
         <h1>Outfit Manager — Tech Stack</h1>
@@ -125,22 +125,22 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
       </header>
       <main>
 
-<section id="current-vs-target" class="callout warn">
-  <h2>Current vs target state</h2>
-  <p><b>This document describes the TARGET stack after migration, not the current legacy build.</b> Outfit Manager is a published Steam Workshop mod (id <code>LordKuper.OutfitManager</code>, workshop <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1984694952">1984694952</a>) whose source currently ships an older toolchain. The target normalizes OM onto the same standard as the sibling <a href="../../rimworld-equipmentmanager/design/architecture/stack.html">EquipmentManager</a> repo.</p>
+<section id="migration-history" class="callout">
+  <h2>Migration history</h2>
+  <p><b>This document describes the AS-BUILT current stack.</b> Outfit Manager is a published Steam Workshop mod (id <code>LordKuper.OutfitManager</code>, workshop <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1984694952">1984694952</a>) now normalized onto the same modern standard as the sibling <a href="../../rimworld-equipmentmanager/design/architecture/stack.html">EquipmentManager</a> repo. The legacy → modern stack migration was completed in sprint <code>001-full-audit-alignment</code> (landed 2026-06-07); the table below is retained as <b>history</b> to record what changed.</p>
   <table class="tech-table">
-    <thead><tr><th>Aspect</th><th>Current (legacy, as-built)</th><th>Target (this doc)</th></tr></thead>
+    <thead><tr><th>Aspect</th><th>Pre-sprint-001 (legacy, historical)</th><th>Current (as-built, this doc)</th></tr></thead>
     <tbody>
-      <tr><td>Project format</td><td>Legacy non-SDK <code>.csproj</code> (<code>ToolsVersion 15.0</code>, <code>Microsoft.Common.props</code> import, explicit <code>Compile Include</code> list)</td><td>SDK-style <code>.csproj</code> with implicit globbing</td></tr>
+      <tr><td>Project format</td><td>Legacy non-SDK <code>.csproj</code> (<code>ToolsVersion 15.0</code>, <code>Microsoft.Common.props</code> import, explicit <code>Compile Include</code> list)</td><td>SDK-style <code>.csproj</code> with implicit globbing (<code>Source/OutfitManager/OutfitManager.csproj</code>)</td></tr>
       <tr><td>Package management</td><td><code>packages.config</code> + <code>packages\</code> folder; analyzers wired via raw <code>&lt;Analyzer Include&gt;</code> paths</td><td><code>PackageReference</code></td></tr>
       <tr><td>Harmony (compile)</td><td>HintPath to <code>packages\Lib.Harmony.2.3.6\lib\net48\0Harmony.dll</code> (<b>2.3.6</b>)</td><td><code>Lib.Harmony</code> <b>2.4.2</b> compile-only <code>PackageReference</code></td></tr>
       <tr><td>Test project</td><td><b>None</b> — no test project, no test framework</td><td><code>OutfitManager.Tests</code> (NUnit 4 + FluentAssertions 7 + Test SDK)</td></tr>
       <tr><td>Solution</td><td><code>Source/OutfitManager.sln</code> (legacy)</td><td><code>Source/OutfitManager.slnx</code></td></tr>
-      <tr><td>Nullability</td><td>Not enabled (no <code>&lt;Nullable&gt;</code>); JetBrains <code>[NotNull]</code> annotations in use</td><td><code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> on all projects</td></tr>
+      <tr><td>Nullability</td><td>Not enabled (no <code>&lt;Nullable&gt;</code>); JetBrains <code>[NotNull]</code> annotation in use</td><td><code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> on all projects; the lone <code>[NotNull]</code> removed</td></tr>
       <tr><td>Optional-mod integrations</td><td>None (no SimpleSidearms / CE / VFE)</td><td>None (unchanged — OM has no optional integrations)</td></tr>
     </tbody>
   </table>
-  <p>Legacy migration is a <b>prerequisite</b> for adopting the target tooling rows below: the SDK-style/<code>PackageReference</code>/<code>.slnx</code>/test-project moves land first, then the version pins apply.</p>
+  <p>The migration is <b>complete</b>: the SDK-style / <code>PackageReference</code> / <code>.slnx</code> / test-project moves landed, the version pins apply, the build is green under warnings-as-errors, and the unit-test suite passes.</p>
 </section>
 
 <section id="languages">
@@ -151,7 +151,7 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
       <tr><td><strong>C#</strong></td><td class="ver"><code>LangVersion latest</code>, compiled for <code>net48</code></td><td><span class="chip area">production + tests</span></td></tr>
     </tbody>
   </table>
-  <p><b>Nullability (target)</b>: <code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> on both the production project (<code>OutfitManager.csproj</code>) and the future test project (<code>OutfitManager.Tests.csproj</code>). The current legacy build does <em>not</em> enable nullable and still uses JetBrains nullability attributes (<code>[NotNull]</code> appears in <code>ApparelCache.cs</code>). The target migrates to C# nullable reference types and retains <code>using JetBrains.Annotations;</code> only where a non-nullability attribute (<code>[UsedImplicitly]</code>) is still referenced (e.g. <code>OutfitManagerMod.cs</code>, <code>Patches/JobGiverPatch.cs</code>, <code>Settings.cs</code>). The current source already uses modern C# syntax (collection expressions <code>[]</code>, file-scoped namespaces, target-typed <code>new()</code>), confirming <code>LangVersion latest</code> compatibility.</p>
+  <p><b>Nullability (as-built)</b>: <code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code> is active project-wide — on both the production project (<code>Source/OutfitManager/OutfitManager.csproj</code>) and the test project (<code>Source/OutfitManager.Tests/OutfitManager.Tests.csproj</code>). The JetBrains nullability attributes were removed in the sprint-001 migration: the lone <code>[NotNull]</code> (formerly in <code>ApparelCache.cs</code>) was dropped in favour of real C# nullable reference types and compiler flow analysis. <code>using JetBrains.Annotations;</code> is retained only where the non-nullability attribute <code>[UsedImplicitly]</code> is still referenced (<code>OutfitManagerMod.cs</code>, <code>Patches/JobGiverPatch.cs</code>, <code>Settings.cs</code>). The source uses modern C# syntax (collection expressions <code>[]</code>, file-scoped namespaces, target-typed <code>new()</code>), consistent with <code>LangVersion latest</code>.</p>
 </section>
 
 <section id="frameworks">
@@ -163,7 +163,7 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
       <tr><td><strong>UnityEngine.CoreModule</strong></td><td class="ver">game-bound</td><td>Unity runtime types (<code>Rect</code>, <code>Vector2</code>, <code>Mathf</code>, <code>Event</code>) used by settings UI</td></tr>
       <tr><td><strong>UnityEngine.IMGUIModule</strong></td><td class="ver">game-bound</td><td>Immediate-mode GUI for the mod settings window (General + Work Types tabs)</td></tr>
       <tr><td><strong>UnityEngine.TextRenderingModule</strong></td><td class="ver">game-bound</td><td>Text rendering for UI labels/tooltips</td></tr>
-      <tr><td><strong>Lib.Harmony</strong></td><td class="ver">2.4.2 (compile-only; legacy is 2.3.6)</td><td>Runtime method patching; single transpiler on <code>JobGiver_OptimizeApparel.ApparelScoreRaw</code>. Runtime copy supplied by the Harmony mod</td></tr>
+      <tr><td><strong>Lib.Harmony</strong></td><td class="ver">2.4.2 (compile-only <code>PackageReference</code>; was 2.3.6 pre-sprint-001)</td><td>Runtime method patching; single transpiler on <code>JobGiver_OptimizeApparel.ApparelScoreRaw</code>. Runtime copy supplied by the Harmony mod</td></tr>
       <tr><td><strong>LordKuper.Common</strong></td><td class="ver">upstream, 1.6 (compile-only)</td><td>Shared logging / time / cache / work-type-rule / UI-widget library; upstream integration contract, not forked</td></tr>
     </tbody>
   </table>
@@ -190,13 +190,13 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
   <table class="tech-table">
     <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
     <tbody>
-      <tr><td><strong>dotnet SDK</strong> <span class="ver">10.0.300</span></td><td>MSBuild build/test/format driver (machine-resolved, no <code>global.json</code>); builds the <code>OutfitManager.slnx</code> solution (target)</td></tr>
+      <tr><td><strong>dotnet SDK</strong> <span class="ver">10.0.300</span></td><td>MSBuild build/test/format driver (machine-resolved, no <code>global.json</code>); builds the <code>Source/OutfitManager.slnx</code> solution</td></tr>
       <tr><td><strong>MSBuild (via dotnet)</strong></td><td><code>build: dotnet build Source/OutfitManager.slnx -c Release</code></td></tr>
-      <tr><td><strong>dotnet test</strong></td><td><code>dotnet test Source/OutfitManager.slnx</code> (once the test project exists)</td></tr>
+      <tr><td><strong>dotnet test</strong></td><td><code>dotnet test Source/OutfitManager.slnx</code> (runs the <code>OutfitManager.Tests</code> suite)</td></tr>
       <tr><td><strong>dotnet format</strong></td><td><code>lint: dotnet format … --verify-no-changes</code>; fix: <code>dotnet format …</code></td></tr>
-      <tr><td><strong>Microsoft.CodeAnalysis.NetAnalyzers</strong> <span class="ver">9.0.0</span></td><td>Roslyn CA analyzers (already referenced in the legacy csproj via raw <code>&lt;Analyzer Include&gt;</code> paths). <b>Pin retained at 9.0.0</b> — do not adopt 10.0.300; the .NET 10 band adds rules that would break the build under warnings-as-errors</td></tr>
+      <tr><td><strong>Microsoft.CodeAnalysis.NetAnalyzers</strong> <span class="ver">9.0.0</span></td><td>Roslyn CA analyzers, referenced via <code>PackageReference</code> and gating the build under <code>TreatWarningsAsErrors</code>. <b>Pin retained at 9.0.0</b> — do not adopt 10.0.300; the .NET 10 band adds rules that would break the build under warnings-as-errors</td></tr>
       <tr><td><strong>JetBrains ReSharper GlobalTools (<code>jb</code>)</strong> <span class="ver">2026.1.2</span></td><td><code>jb cleanupcode</code> (pre-build) + <code>jb inspectcode</code> → SARIF (post-lint; verify zero error/warning), against <code>OutfitManager.slnx</code></td></tr>
-      <tr><td><strong>Microsoft.NET.Test.Sdk</strong> <span class="ver">18.6.0</span></td><td>Test host/platform (target test project)</td></tr>
+      <tr><td><strong>Microsoft.NET.Test.Sdk</strong> <span class="ver">18.6.0</span></td><td>Test host/platform for the <code>OutfitManager.Tests</code> project</td></tr>
       <tr><td><strong>NUnit</strong> <span class="ver">4.6.1</span></td><td>Test framework (4.x; asserts via FluentAssertions, not <code>Assert.*</code>)</td></tr>
       <tr><td><strong>NUnit3TestAdapter</strong> <span class="ver">6.2.0</span></td><td>VSTest adapter (runs NUnit 4 tests despite the "3" in the name)</td></tr>
       <tr><td><strong>FluentAssertions</strong> <span class="ver">7.2.2</span></td><td>Assertion library; <b>pinned to 7.x (Apache-2.0)</b> — 8.x is commercially licensed</td></tr>
@@ -207,15 +207,15 @@ source: ../rimworld-equipmentmanager/design/architecture/stack.html (sibling sta
 <section id="constraints" class="callout warn">
   <h2>Constraints</h2>
   <ul>
-    <li><b>Legacy migration is a prerequisite.</b> The target tooling (SDK-style csproj, <code>PackageReference</code>, <code>.slnx</code>, test project, Harmony 2.4.2) requires migrating off the current non-SDK <code>.csproj</code> + <code>packages.config</code> + <code>.sln</code> + Harmony 2.3.6 first.</li>
+    <li><b>Modern stack is as-built.</b> The SDK-style csproj, <code>PackageReference</code>, <code>.slnx</code>, test project, and Harmony 2.4.2 landed in sprint <code>001-full-audit-alignment</code> (2026-06-07). The legacy non-SDK <code>.csproj</code> + <code>packages.config</code> + <code>.sln</code> + Harmony 2.3.6 are gone (see Migration history).</li>
     <li><b>NetAnalyzers pinned to 9.0.0.</b> Do NOT bump to 10.0.300 — the .NET 10 analyzer band adds CA rules that fail the build under warnings-as-errors. The pin is deliberate (per user decision).</li>
     <li><b>FluentAssertions pinned to 7.x (Apache-2.0).</b> Never upgrade to 8.x — 8.x is commercially licensed (Xceed). License-driven hard constraint.</li>
     <li><b>net48 target only.</b> Dictated by RimWorld's Mono runtime; cannot target modern .NET runtimes.</li>
     <li><b>RimWorld assemblies are not NuGet.</b> <code>Assembly-CSharp</code> + Unity modules are HintPath references resolved from a local RimWorld install; build requires the game installed.</li>
-    <li><b>LordKuper.Common is upstream, read-only.</b> Consume its public surface; do not fork (resolved from <code>..\..\rimworld-common\1.6\Assemblies</code>).</li>
+    <li><b>LordKuper.Common is upstream, read-only.</b> Consume its public surface; do not fork (resolved via the <code>LORDKUPER_COMMON_DIR</code>-backed <code>$(LordKuperCommonAssembliesDir)</code> HintPath in <code>Directory.Build.props</code>).</li>
     <li><b>Transpiler must fail soft.</b> The single Harmony transpiler on <code>JobGiver_OptimizeApparel.ApparelScoreRaw</code> searches for an IL anchor (the <code>Apparel.GetSpecialApparelScoreOffset</code> call site); if the anchor is not found it logs an error and returns the original IL unchanged rather than throwing — vanilla scoring stays intact.</li>
     <li><b>Compile-only references must not ship.</b> Harmony and LordKuper.Common are <code>Private=False</code> / compile-only — runtime copies come from the player's installed mods.</li>
-    <li><b>Warnings-as-errors (target).</b> Build clean under <code>TreatWarningsAsErrors</code> — any analyzer warning fails the build.</li>
+    <li><b>Warnings-as-errors.</b> Both projects build clean under <code>TreatWarningsAsErrors=true</code> with <code>WarningLevel 9999</code> — any analyzer warning fails the build.</li>
     <li><b>Published mod.</b> Live on Steam Workshop (1984694952); changes affect existing subscribers and saved games (<code>ExposeData</code> / <code>Scribe_*</code> compatibility matters).</li>
   </ul>
 </section>
