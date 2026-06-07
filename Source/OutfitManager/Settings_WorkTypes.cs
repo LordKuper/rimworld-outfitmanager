@@ -31,6 +31,12 @@ public partial class Settings
     private static Vector2 _workTypesThingBoxScrollPosition;
 
     /// <summary>
+    ///     The scroll position for the work types map thing icon box.
+    ///     OutfitManager does not use map things, so this is always at the origin.
+    /// </summary>
+    private static Vector2 _workTypesMapThingIconBoxScrollPosition;
+
+    /// <summary>
     ///     The list of available items for the selected work type.
     /// </summary>
     private static readonly List<ThingDef> WorkTypesAvailableItems = [];
@@ -70,7 +76,8 @@ public partial class Settings
     {
         WorkTypeThingRuleWidget.DoWidgetTab(rect, ref _workTypesContentHeight, ref _scrollPosition, 2, WorkTypeRules,
             SelectedWorkTypeRule, rule => { SelectedWorkTypeRule = rule; }, UpdateWorkTypesAvailableItems,
-            ref _workTypesThingBoxScrollPosition, WorkTypesAvailableItems);
+            ref _workTypesThingBoxScrollPosition, WorkTypesAvailableItems,
+            ref _workTypesMapThingIconBoxScrollPosition, null);
     }
 
     /// <summary>
