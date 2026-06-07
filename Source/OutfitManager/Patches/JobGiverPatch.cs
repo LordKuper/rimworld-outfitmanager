@@ -38,10 +38,12 @@ internal static class JobGiverPatch
         }
         if (insertionIndex == -1)
         {
-            Logger.LogError("Could not apply JobGiver patch.");
+            Logger.LogError(
+                "Work-type apparel scoring patch FAILED: expected IL pattern not found in ApparelScoreRaw. " +
+                "Work-type scoring is inactive; vanilla apparel selection will be used instead.");
             return code;
         }
-        Logger.LogMessage("Applying JobGiver patch.");
+        Logger.LogMessage("Work-type apparel scoring patch APPLIED: work-type scoring is active.");
         var newInstructions = new List<CodeInstruction>
         {
             new(OpCodes.Ldloc_0), new(OpCodes.Ldarg_0),
