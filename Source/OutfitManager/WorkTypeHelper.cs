@@ -26,7 +26,7 @@ public static class WorkTypeHelper
                      pawn.workSettings.WorkIsActive(wt)))
         {
             var rule = Settings.WorkTypeRules.FirstOrDefault(r =>
-                r.WorkTypeDefName.Equals(workType.defName, StringComparison.OrdinalIgnoreCase));
+                string.Equals(r.WorkTypeDefName, workType.defName, StringComparison.OrdinalIgnoreCase));
             if (rule == null || !rule.StatWeights.Any()) { continue; }
             workTypePriorities[workType.defName] = pawn.workSettings.GetPriority(workType);
         }

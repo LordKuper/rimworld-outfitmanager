@@ -5,6 +5,7 @@
     <RootNamespace>LordKuper.OutfitManager</RootNamespace>
     <AssemblyName>LordKuper.OutfitManager</AssemblyName>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>..\..\1.6\Assemblies\</OutputPath>

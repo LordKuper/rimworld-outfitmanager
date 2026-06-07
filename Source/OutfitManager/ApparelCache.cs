@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using LordKuper.Common;
 using RimWorld;
 using Verse;
@@ -21,7 +20,7 @@ internal class ApparelCache : ThingCache
     ///     Initializes a new instance of the <see cref="ApparelCache" /> class.
     /// </summary>
     /// <param name="apparel">The apparel item to cache.</param>
-    public ApparelCache([NotNull] Apparel apparel) : base(apparel, RimWorldTime.HoursInQuadrum)
+    public ApparelCache(Apparel apparel) : base(apparel, RimWorldTime.HoursInQuadrum)
     {
     }
 

@@ -11,14 +11,17 @@ namespace LordKuper.OutfitManager;
 public partial class Settings
 {
     /// <summary>
-    ///     The currently selected work type rule.
+    ///     The currently selected work type rule. Null when no rule is selected.
     /// </summary>
-    private static WorkTypeThingRule _selectedWorkTypeRule;
+    private static WorkTypeThingRule? _selectedWorkTypeRule;
 
     /// <summary>
     ///     The list of work type thing rules.
+    ///     Declared nullable because <see cref="Scribe_Collections.Look{T}" /> writes null back
+    ///     on an empty load; the <see cref="InitializeWorkTypesSettings" /> path restores it via
+    ///     the null-coalescing assignment before any caller accesses it.
     /// </summary>
-    private static List<WorkTypeThingRule> _workTypeRules = [];
+    private static List<WorkTypeThingRule>? _workTypeRules = [];
 
     /// <summary>
     ///     The height of the work types content area.
@@ -43,9 +46,9 @@ public partial class Settings
 
     /// <summary>
     ///     Gets or sets the currently selected work type rule.
-    ///     Updates the available items when the selection changes.
+    ///     Updates the available items when the selection changes. Null when nothing is selected.
     /// </summary>
-    private static WorkTypeThingRule SelectedWorkTypeRule
+    private static WorkTypeThingRule? SelectedWorkTypeRule
     {
         get => _selectedWorkTypeRule;
         set
@@ -64,7 +67,10 @@ public partial class Settings
         get
         {
             Initialize();
-            return _workTypeRules;
+            // _workTypeRules is guaranteed non-null after Initialize() runs
+            // InitializeWorkTypesSettings() because that method uses ??= to restore it
+            // when Scribe wrote null back on an empty save load.
+            return _workTypeRules ??= [];
         }
     }
 
@@ -97,7 +103,11 @@ public partial class Settings
         var existingRules = new HashSet<string>();
         foreach (var rule in _workTypeRules.ToList())
         {
-            if (!existingRules.Add(rule.WorkTypeDefName)) { _workTypeRules.Remove(rule); }
+            // WorkTypeDefName may be null on a corrupt save entry; skip rather than crash
+            if (rule.WorkTypeDefName == null || !existingRules.Add(rule.WorkTypeDefName))
+            {
+                _workTypeRules.Remove(rule);
+            }
             foreach (var statWeight in rule.StatWeights) { statWeight.Protected = false; }
         }
         foreach (var workType in WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder)
@@ -108,15 +118,22 @@ public partial class Settings
         foreach (var defaultRule in WorkTypeThingRule.DefaultRules)
         {
             var rule = _workTypeRules.FirstOrDefault(r =>
-                r.WorkTypeDefName.Equals(defaultRule.WorkTypeDefName, StringComparison.OrdinalIgnoreCase));
+                string.Equals(r.WorkTypeDefName, defaultRule.WorkTypeDefName, StringComparison.OrdinalIgnoreCase));
             if (rule == null) { _workTypeRules.Add(defaultRule); }
             else
             {
                 foreach (var defaultStatWeight in defaultRule.StatWeights)
                 {
                     var statWeight = rule.StatWeights.FirstOrDefault(sw =>
-                        sw.StatDefName.Equals(defaultStatWeight.StatDefName, StringComparison.OrdinalIgnoreCase));
-                    if (statWeight == null) { rule.SetStatWeight(defaultStatWeight.StatDef, defaultStatWeight.Weight); }
+                        string.Equals(sw.StatDefName, defaultStatWeight.StatDefName, StringComparison.OrdinalIgnoreCase));
+                    if (statWeight == null)
+                    {
+                        // Only apply the default weight when the backing StatDef resolved successfully
+                        if (defaultStatWeight.StatDef != null)
+                        {
+                            rule.SetStatWeight(defaultStatWeight.StatDef, defaultStatWeight.Weight);
+                        }
+                    }
                     else { statWeight.Protected = defaultStatWeight.Protected; }
                 }
             }
