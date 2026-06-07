@@ -85,12 +85,15 @@ public static class ApparelScoring
 
     /// <summary>
     ///     Initializes stat ranges for all apparel definitions if not already initialized.
+    ///     The flag is set only after seeding completes so that a failure during
+    ///     <see cref="InitializeStatRanges" /> does not leave the flag set with partially-seeded
+    ///     state — the next call will retry from scratch instead of returning early.
     /// </summary>
     private static void Initialize()
     {
         if (_isInitialized) { return; }
-        _isInitialized = true;
         InitializeStatRanges();
+        _isInitialized = true;
     }
 
     /// <summary>
