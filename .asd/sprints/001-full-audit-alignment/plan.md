@@ -67,14 +67,14 @@ The sprint is done when, and only when, all of the following hold:
 - [ ] Confirm the transpiler patch on `ApparelScoreRaw` still applies and emits its visible patch-applied startup signal after the dependency bump (per adr-0001) <!-- owner: backend-dev | ac: AC-14 | adr: adr-0001 | deps: T3 --> — BLOCKED: MS-2
 
 ### Task 4: Enable nullable and resolve NRT warnings (gated behind Phase A green build)
-- [ ] Enable `Nullable` project-wide <!-- owner: backend-dev | ac: AC-12 | adr: adr-0003 | deps: T3 -->
-- [ ] Replace the lone `[NotNull]` in `ApparelCache.cs` with real NRT and remove the JetBrains nullability attributes (keep the `[UsedImplicitly]` usages) <!-- owner: backend-dev | ac: AC-12 | adr: adr-0003 -->
-- [ ] Resolve every NRT warning surfaced by the flip so the build stays clean under zero-warnings <!-- owner: backend-dev | ac: AC-12, AC-28 | adr: adr-0003 | deps: T3 -->
+- [x] Enable `Nullable` project-wide <!-- owner: backend-dev | ac: AC-12 | adr: adr-0003 | deps: T3 -->
+- [x] Replace the lone `[NotNull]` in `ApparelCache.cs` with real NRT and remove the JetBrains nullability attributes (keep the `[UsedImplicitly]` usages) <!-- owner: backend-dev | ac: AC-12 | adr: adr-0003 -->
+- [x] Resolve every NRT warning surfaced by the flip so the build stays clean under zero-warnings <!-- owner: backend-dev | ac: AC-12, AC-28 | adr: adr-0003 | deps: T3 -->
 
 ### Task 5: Confirm reuse-over-duplication against LordKuper.Common
-- [ ] Audit OM's local surface against the LordKuper.Common public API; replace any code reimplementing Common functionality with calls into the shared library <!-- owner: backend-dev | ac: AC-15 -->
-- [ ] Record the reuse-audit result; where no local reimplementation exists (expected PASS for OM), document the confirmation rather than forcing a deletion <!-- owner: backend-dev | ac: AC-16 -->
-- [ ] Verify continued consumption of Common's public surface (`WorkTypeThingRule`, `ThingCache`, `WorkTypeThingRuleWidget`, `RimWorldTime`, `StatWeight`, `Common.UI`, `Common.Logger`) is contract-correct and public-surface-only (no forking) <!-- owner: backend-dev | ac: AC-17 -->
+- [x] Audit OM's local surface against the LordKuper.Common public API; replace any code reimplementing Common functionality with calls into the shared library <!-- owner: backend-dev | ac: AC-15 -->
+- [x] Record the reuse-audit result; where no local reimplementation exists (expected PASS for OM), document the confirmation rather than forcing a deletion <!-- owner: backend-dev | ac: AC-16 -->
+- [x] Verify continued consumption of Common's public surface (`WorkTypeThingRule`, `ThingCache`, `WorkTypeThingRuleWidget`, `RimWorldTime`, `StatWeight`, `Common.UI`, `Common.Logger`) is contract-correct and public-surface-only (no forking) <!-- owner: backend-dev | ac: AC-17 -->
 
 ### Task 6: Behaviour-neutral simplification and optimization
 - [ ] Consolidate the redundant `Settings.WorkTypeRules.FirstOrDefault(...)` lookup duplicated across `ApparelCache.Update` and `ApparelCache.GetWorkTypeScore` (single path and/or index rules by defName) without changing observable behaviour <!-- owner: backend-dev | ac: AC-18 -->
@@ -83,15 +83,15 @@ The sprint is done when, and only when, all of the following hold:
 - [ ] Preserve the existing sound-caching patterns (`ConditionalWeakTable` weak keys, quadrum cache window); do not "optimize" them into a regression <!-- owner: backend-dev | ac: AC-21 -->
 
 ### Task 7: Stand up the unit test project with isolation and assembly-resolver infrastructure
-- [ ] Create the `Source/OutfitManager.Tests/` SDK-style project; ensure it builds and is included in the `.slnx` <!-- owner: test-engineer | ac: AC-22 | deps: T2 -->
-- [ ] Configure the test project on NUnit 4.x and FluentAssertions 7.x (license pinned to 7.x) <!-- owner: test-engineer | ac: AC-23 -->
-- [ ] Add static-state isolation infrastructure that snapshots/restores RimWorld/Verse and OM static state (`ApparelScoring._isInitialized`, the `ConditionalWeakTable`, static `Settings` fields) so state does not bleed between tests <!-- owner: test-engineer | ac: AC-24 -->
-- [ ] Add RimWorld assembly-resolver infrastructure so tests load against the game assemblies <!-- owner: test-engineer | ac: AC-25 | deps: T2 -->
+- [x] Create the `Source/OutfitManager.Tests/` SDK-style project; ensure it builds and is included in the `.slnx` <!-- owner: test-engineer | ac: AC-22 | deps: T2 -->
+- [x] Configure the test project on NUnit 4.x and FluentAssertions 7.x (license pinned to 7.x) <!-- owner: test-engineer | ac: AC-23 -->
+- [x] Add static-state isolation infrastructure that snapshots/restores RimWorld/Verse and OM static state (`ApparelScoring._isInitialized`, the `ConditionalWeakTable`, static `Settings` fields) so state does not bleed between tests <!-- owner: test-engineer | ac: AC-24 -->
+- [x] Add RimWorld assembly-resolver infrastructure so tests load against the game assemblies <!-- owner: test-engineer | ac: AC-25 | deps: T2 -->
 
 ### Task 8: Initial test coverage including transpiler fail-soft characterization
-- [ ] Cover `WorkTypeHelper.GetNormalizedWorkTypeWeights` including the `wpMin==wpMax`, empty-set, and single-work-type branches <!-- owner: test-engineer | ac: AC-26 | deps: T7 -->
-- [ ] Cover `ApparelCache.GetWorkTypesScore` weighted-sum and `ApparelScoring` factor multiplication <!-- owner: test-engineer | ac: AC-26 | deps: T7 -->
-- [ ] Characterization-test the transpiler fail-soft contract (pattern-not-found → returns original IL + logs, never throws) where the resolver fixture allows, or document it as integration-verified-in-game otherwise <!-- owner: test-engineer | ac: AC-27 | adr: adr-0001 | deps: T7 -->
+- [x] Cover `WorkTypeHelper.GetNormalizedWorkTypeWeights` including the `wpMin==wpMax`, empty-set, and single-work-type branches <!-- owner: test-engineer | ac: AC-26 | deps: T7 -->
+- [x] Cover `ApparelCache.GetWorkTypesScore` weighted-sum and `ApparelScoring` factor multiplication <!-- owner: test-engineer | ac: AC-26 | deps: T7 -->
+- [x] Characterization-test the transpiler fail-soft contract (pattern-not-found → returns original IL + logs, never throws) where the resolver fixture allows, or document it as integration-verified-in-game otherwise <!-- owner: test-engineer | ac: AC-27 | adr: adr-0001 | deps: T7 -->
 
 ### Task 9: Rule conformance — zero-warnings, language, logging
 - [ ] Enforce the zero-warnings policy: `TreatWarningsAsErrors=true` with a high warning level; confirm NetAnalyzers 9.0.0 reports 0 warnings on a clean build <!-- owner: backend-dev | ac: AC-28 | deps: T3, T4 -->
