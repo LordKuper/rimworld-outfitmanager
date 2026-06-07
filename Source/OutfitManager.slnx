@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="OutfitManager/OutfitManager.csproj" />
+  <Project Path="OutfitManager.Tests/OutfitManager.Tests.csproj" />
+</Solution>

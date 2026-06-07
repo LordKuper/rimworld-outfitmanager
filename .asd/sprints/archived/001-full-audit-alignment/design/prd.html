@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: html shell wrap for all asd user-facing html docs
+  excludes: doc content, doc-specific structure
+  delegates_to: fragment templates (t_prd, t_adr, t_ux-spec, t_concept, t_stack, t_design-system, t_accessibility, t_api)
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="PRD">
+  <meta name="subsystem" content="sprint">
+  <meta name="sprint-id" content="001-full-audit-alignment">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-07">
+  <meta name="responsibility" content="product requirements (sprint draft full scope)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>Outfit Manager — Alignment PRD</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* fragment-shared utilities */
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+
+    ol.goal-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    ol.goal-grid li { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: flex; gap: 10px; }
+    ol.goal-grid .num { flex: 0 0 auto; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+    ol.goal-grid p { margin: 0; }
+
+    details.role-group { border: 1px solid var(--border); border-radius: 6px; margin: 8px 0; background: var(--card-bg); }
+    details.role-group > summary { cursor: pointer; padding: 8px 12px; font-weight: 600; }
+    details.role-group > summary .count { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); font-weight: 400; font-size: 0.8rem; color: var(--muted); }
+    details.role-group ul.stories { margin: 0; padding: 4px 16px 12px 28px; }
+    ul.stories li { margin: 4px 0; }
+    ul.stories b { color: var(--accent); font-weight: 600; }
+
+    table.ac-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+    .chip.prio-must   { background: var(--chip-must-bg);   color: var(--chip-must-fg); border-color: var(--chip-must-fg); }
+    .chip.prio-should { background: var(--chip-should-bg); color: var(--chip-should-fg); border-color: var(--chip-should-fg); }
+    .chip.prio-may    { background: var(--chip-may-bg);    color: var(--chip-may-fg); border-color: var(--chip-may-fg); }
+
+    ul.non-goals { margin: 0; padding-left: 22px; }
+    ul.non-goals li::marker { content: "⊘  "; color: var(--warn); }
+
+    /* definition-list pattern: Purpose / Entry / Exit / Notes */
+    dl.def-list { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 8px 0; }
+    dl.def-list dt { font-weight: 600; color: var(--muted); }
+    dl.def-list dd { margin: 0; }
+
+    /* ADR */
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    /* UX-spec mockup */
+    article.mockup { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    article.mockup > h3 { margin-top: 0; }
+    .mockup-preview { background: var(--bg); border: 1px dashed var(--border); border-radius: 6px; padding: 16px; margin: 10px 0; min-height: 80px; }
+    .screen-meta { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 6px 0 10px; font-size: 0.92rem; }
+    .screen-meta b { color: var(--muted); font-weight: 600; }
+
+    /* Concept */
+    .pillar-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+    .pillar-grid li { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 12px; }
+    .pillar-grid li strong { display: block; margin-bottom: 4px; color: var(--accent); }
+    .anti-pillar-grid li { border-left-color: var(--danger); }
+    .anti-pillar-grid li strong { color: var(--danger); }
+    ul.user-segments { list-style: none; padding: 0; }
+    ul.user-segments li { padding: 8px 12px; margin: 6px 0; border-left: 3px solid var(--accent); background: var(--card-bg); border-radius: 4px; }
+    ul.user-segments li b { color: var(--accent); }
+    ul.metrics li { margin: 4px 0; }
+    ul.metrics li .target { float: right; color: var(--ok); font-variant-numeric: tabular-nums; }
+
+    /* Stack */
+    table.tech-table .ver { font-variant-numeric: tabular-nums; color: var(--muted); }
+    .principle-list { list-style: none; padding: 0; }
+    .principle-list li { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--info); border-radius: 6px; padding: 8px 12px; margin: 6px 0; }
+    .principle-list li strong { color: var(--info); }
+
+    /* Accessibility */
+    section.a11y-domain { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; margin: 14px 0; }
+    section.a11y-domain h2 { border-bottom: 1px dashed var(--border); }
+    .a11y-domain .scope { font-size: 0.9rem; color: var(--muted); margin: 4px 0 8px; }
+    .limitation { background: var(--chip-should-bg); border-left: 3px solid var(--warn); padding: 8px 12px; margin: 6px 0; border-radius: 4px; }
+    .limitation b { color: var(--warn); }
+
+    /* API */
+    .http-method { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; font-family: ui-monospace, "Cascadia Code", Menlo, monospace; letter-spacing: 0.5px; border: 1px solid var(--border); }
+    .http-get    { color: var(--info);   background: var(--chip-may-bg);    border-color: var(--info); }
+    .http-post   { color: var(--ok);     background: rgba(31,136,61,0.10);  border-color: var(--ok); }
+    .http-put    { color: var(--warn);   background: var(--chip-should-bg); border-color: var(--warn); }
+    .http-patch  { color: var(--warn);   background: var(--chip-should-bg); border-color: var(--warn); }
+    .http-delete { color: var(--danger); background: var(--chip-must-bg);   border-color: var(--danger); }
+    article.endpoint { border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 14px 0; background: var(--card-bg); }
+    article.endpoint > h3 { margin-top: 0; font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: 1rem; }
+    article.endpoint h4 { margin: 12px 0 4px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+
+    /* Design system */
+    .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .swatch { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+    .swatch .chip-color { height: 80px; border-radius: 4px; border: 1px solid var(--border); }
+    .swatch code { font-size: 0.78rem; }
+    .swatch small { color: var(--muted); }
+    .spacing-scale { display: flex; align-items: flex-end; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); }
+    .spacing-scale > div { background: var(--accent); width: 24px; border-radius: 2px 2px 0 0; }
+    article.component-preview { border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 14px 0; background: var(--card-bg); }
+    .preview { padding: 16px; border: 1px dashed var(--border); border-radius: 6px; background: var(--bg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      details.role-group[open] > summary { list-style: none; }
+      details.role-group { break-inside: avoid; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#goals">Goals</a></li>
+        <li><a href="#user-stories">User stories</a></li>
+        <li><a href="#ac-w1-audit">Acceptance criteria — W1 Audit</a></li>
+        <li><a href="#ac-w2-restructure">Acceptance criteria — W2 Per-project restructure</a></li>
+        <li><a href="#ac-w3-stack">Acceptance criteria — W3 Stack migration</a></li>
+        <li><a href="#ac-w4-reuse">Acceptance criteria — W4 Reuse over duplication</a></li>
+        <li><a href="#ac-w5-optimize">Acceptance criteria — W5 Optimization &amp; simplification</a></li>
+        <li><a href="#ac-w6-tests">Acceptance criteria — W6 Unit test project</a></li>
+        <li><a href="#ac-w7-conformance">Acceptance criteria — W7 Rule conformance</a></li>
+        <li><a href="#ac-end-to-end">Acceptance criteria — End-to-end &amp; published-mod constraint</a></li>
+        <li><a href="#traceability">Story → AC traceability</a></li>
+        <li><a href="#non-goals">Non-goals</a></li>
+        <li><a href="#assumptions">Assumptions &amp; dependencies</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>PRD</span>
+          <span>sprint</span>
+          <span class="status-draft">draft</span>
+          <!-- provenance badge omitted when provenance == original -->
+        </div>
+        <h1>Outfit Manager — Alignment PRD</h1>
+        <div class="stats">3 goals · 7 stories · 33 AC · 6 non-goals · updated 2026-06-07</div>
+      </header>
+      <main>
+
+<section id="problem" class="hero">
+  <h2>Problem</h2>
+  <p class="lede">OutfitManager (OM) is a published RimWorld mod that still runs on the legacy build stack — non-SDK <code>.csproj</code>, <code>packages.config</code>, Harmony 2.3.6, no test project, no Nullable. Its sibling mods (EquipmentManager as the reference) have already moved to the modernized LordKuper house standard. The structural, technical, and quality gap between OM and that standard makes OM harder to maintain, impossible to build portably or under the modern <code>dotnet</code>/<code>jb</code> flow, and unverifiable for regressions. This sprint brings OM into full alignment with the modern sibling standard in a single end-to-end pass, without changing the mod's observable behaviour.</p>
+</section>
+
+<section id="goals">
+  <h2>Goals</h2>
+  <ol class="goal-grid">
+    <li><span class="num">G1</span><p><b>Structural &amp; stack alignment.</b> Restructure every project to the modern sibling layout and migrate the full build/test stack (<code>.slnx</code>, SDK-style projects, <code>PackageReference</code>, .NET 10 SDK / <code>dotnet</code> / <code>jb</code>, Nullable enable, zero-warnings, Harmony 2.4.2, LordKuper.Common 1.6, NetAnalyzers 9.0.0 pin) so OM builds end-to-end on the modern stack.</p></li>
+    <li><span class="num">G2</span><p><b>Quality &amp; reuse.</b> Eliminate any duplication of LordKuper.Common functionality in favour of shared-library reuse, simplify and optimize hot paths without changing observable behaviour, and stand up the unit test project with initial coverage of the migrated/refactored logic.</p></li>
+    <li><span class="num">G3</span><p><b>Rule &amp; published-mod conformance.</b> Bring OM into conformance with the project rule set (zero-warnings, language policy, coding conventions), and ensure any user-visible or save-affecting change is explicitly flagged for the published player base.</p></li>
+  </ol>
+</section>
+
+<section id="user-stories">
+  <h2>User stories</h2>
+  <details class="role-group" open>
+    <summary>Maintainer (LordKuper) <span class="count">4</span></summary>
+    <ul class="stories">
+      <li id="US-1"><b>as</b> the mod maintainer, <b>I want</b> OM audited against the modern sibling standard, <b>so that</b> every alignment workstream is seeded from a single, verified list of divergences. <span class="chip area">US-1</span></li>
+      <li id="US-2"><b>as</b> the mod maintainer, <b>I want</b> every project restructured to the EM reference layout, <b>so that</b> OM is navigable and consistent with its sibling mods. <span class="chip area">US-2</span></li>
+      <li id="US-3"><b>as</b> the mod maintainer, <b>I want</b> the full build/test stack migrated to the modern target, <b>so that</b> OM builds portably under <code>dotnet</code>/<code>jb</code> with zero warnings on any machine. <span class="chip area">US-3</span></li>
+      <li id="US-7"><b>as</b> the mod maintainer, <b>I want</b> OM verified against the project rule set, <b>so that</b> the codebase provably conforms to the house standard before release. <span class="chip area">US-7</span></li>
+    </ul>
+  </details>
+  <details class="role-group" open>
+    <summary>Contributor <span class="count">2</span></summary>
+    <ul class="stories">
+      <li id="US-4"><b>as</b> a contributor, <b>I want</b> code that duplicates LordKuper.Common removed in favour of shared-library reuse, <b>so that</b> there is one source of truth for shared behaviour. <span class="chip area">US-4</span></li>
+      <li id="US-6"><b>as</b> a contributor, <b>I want</b> a unit test project with isolation and assembly-resolver infrastructure plus initial coverage, <b>so that</b> I can safely change the scoring/cache logic and catch regressions. <span class="chip area">US-6</span></li>
+    </ul>
+  </details>
+  <details class="role-group" open>
+    <summary>Player <span class="count">1</span></summary>
+    <ul class="stories">
+      <li id="US-5"><b>as</b> a player with existing saves, <b>I want</b> the mod's behaviour and saves preserved across the alignment work (with any unavoidable user-visible change flagged), <b>so that</b> the update does not silently break my colony or my settings. <span class="chip area">US-5</span></li>
+    </ul>
+  </details>
+</section>
+
+<section id="ac-w1-audit">
+  <h2>Acceptance criteria — W1 Audit</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-1"><td><a href="#AC-1">AC-1</a></td><td>An audit of OM against the modern sibling standard (EM reference) is produced in <code>audit.md</code> covering existing docs, existing implementation, gaps, and risks across all seven workstreams.</td><td><span class="chip area">audit</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-2"><td><a href="#AC-2">AC-2</a></td><td>The audit enumerates every structural, stack, duplication, performance, and rule-conformance divergence from the reference, each tagged to its owning workstream (W1–W7).</td><td><span class="chip area">audit</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-3"><td><a href="#AC-3">AC-3</a></td><td>The audit is reviewed and approved before downstream design/implementation work proceeds.</td><td><span class="chip area">audit</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ac-w2-restructure">
+  <h2>Acceptance criteria — W2 Per-project restructure</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-4"><td><a href="#AC-4">AC-4</a></td><td>The production project is moved from the flat <code>Source/</code> layout to <code>Source/OutfitManager/</code> matching the EM reference folder organization.</td><td><span class="chip area">restructure</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-5"><td><a href="#AC-5">AC-5</a></td><td>File, folder, and namespace organization conforms to the modern sibling conventions (per <code>custom-common-rules.md</code>).</td><td><span class="chip area">restructure</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-6"><td><a href="#AC-6">AC-6</a></td><td>Existing XML doc-comment coverage (the dense <code>///</code> surface across the production files) is preserved through the restructure.</td><td><span class="chip area">restructure</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-7"><td><a href="#AC-7">AC-7</a></td><td>The legacy <code>Source/Properties/AssemblyInfo.cs</code> is removed/replaced, with assembly attributes generated from MSBuild properties under the SDK project.</td><td><span class="chip area">restructure</span></td><td><span class="chip prio-should">should</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ac-w3-stack">
+  <h2>Acceptance criteria — W3 Stack migration</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-8"><td><a href="#AC-8">AC-8</a></td><td>The non-SDK <code>OutfitManager.csproj</code> is converted to an SDK-style project (no explicit <code>&lt;Compile Include&gt;</code> list).</td><td><span class="chip area">stack</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-9"><td><a href="#AC-9">AC-9</a></td><td><code>packages.config</code> dependencies are migrated to <code>PackageReference</code>, and the <code>packages/</code> restore folder is removed.</td><td><span class="chip area">stack</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-10"><td><a href="#AC-10">AC-10</a></td><td>The solution is converted from VS <code>.sln</code> format to <code>.slnx</code> at <code>Source/</code>.</td><td><span class="chip area">stack</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-11"><td><a href="#AC-11">AC-11</a></td><td>A <code>Source/Directory.Build.props</code> provides shared properties and env-var-resolved reference HintPaths (<code>RIMWORLD_DIR</code> / <code>LORDKUPER_COMMON_DIR</code>); no machine-specific hardcoded paths remain.</td><td><span class="chip area">stack</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-12"><td><a href="#AC-12">AC-12</a></td><td><code>Nullable</code> is enabled project-wide; the lone <code>[NotNull]</code> in <code>ApparelCache.cs</code> is replaced with real NRT and JetBrains nullability attributes are removed (the <code>[UsedImplicitly]</code> usages remain).</td><td><span class="chip area">stack</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-13"><td><a href="#AC-13">AC-13</a></td><td>Harmony is bumped from 2.3.6 to Lib.Harmony 2.4.2; LordKuper.Common is pinned at 1.6; NetAnalyzers is pinned at 9.0.0 (deliberate pin).</td><td><span class="chip area">stack</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-14"><td><a href="#AC-14">AC-14</a></td><td>The project builds via the .NET 10 SDK <code>dotnet build</code> path and the <code>jb</code> (ReSharper CLI) cleanup/inspect flow runs against the migrated project.</td><td><span class="chip area">stack</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ac-w4-reuse">
+  <h2>Acceptance criteria — W4 Reuse over duplication</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-15"><td><a href="#AC-15">AC-15</a></td><td>OM's local surface is audited against the LordKuper.Common public API; any code reimplementing functionality already provided by Common is replaced with calls into the shared library.</td><td><span class="chip area">reuse</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-16"><td><a href="#AC-16">AC-16</a></td><td>The reuse audit result is recorded; where no local reimplementation exists (confirmed PASS for OM), the confirmation is documented rather than forcing a deletion.</td><td><span class="chip area">reuse</span></td><td><span class="chip prio-should">should</span></td></tr>
+      <tr id="AC-17"><td><a href="#AC-17">AC-17</a></td><td>Continued consumption of Common's public surface (<code>WorkTypeThingRule</code>, <code>ThingCache</code>, <code>WorkTypeThingRuleWidget</code>, <code>RimWorldTime</code>, <code>StatWeight</code>, <code>Common.UI</code>, <code>Common.Logger</code>) remains contract-correct and public-surface-only (no forking).</td><td><span class="chip area">reuse</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ac-w5-optimize">
+  <h2>Acceptance criteria — W5 Optimization &amp; simplification</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-18"><td><a href="#AC-18">AC-18</a></td><td>The redundant <code>Settings.WorkTypeRules.FirstOrDefault(...)</code> rule lookup duplicated across <code>ApparelCache.Update</code> and <code>ApparelCache.GetWorkTypeScore</code> is consolidated (one path retained and/or rules indexed by defName) without changing observable behaviour.</td><td><span class="chip area">optimize</span></td><td><span class="chip prio-should">should</span></td></tr>
+      <tr id="AC-19"><td><a href="#AC-19">AC-19</a></td><td>The <code>ApparelScoring.Initialize()</code> ordering fragility (the <code>_isInitialized</code> flag set before <code>InitializeStatRanges()</code> completes) is corrected so a mid-init failure cannot leave the flag set with partially-seeded ranges.</td><td><span class="chip area">optimize</span></td><td><span class="chip prio-should">should</span></td></tr>
+      <tr id="AC-20"><td><a href="#AC-20">AC-20</a></td><td>All W5 simplification/optimization changes are behaviour-neutral: apparel-pick outcomes for a given pawn/apparel/settings configuration are unchanged, verified against characterization tests (W6).</td><td><span class="chip area">optimize</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-21"><td><a href="#AC-21">AC-21</a></td><td>The existing sound caching patterns (<code>ConditionalWeakTable</code> weak keys, quadrum cache window) are preserved and not "optimized" into a regression.</td><td><span class="chip area">optimize</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ac-w6-tests">
+  <h2>Acceptance criteria — W6 Unit test project</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-22"><td><a href="#AC-22">AC-22</a></td><td>A <code>Source/OutfitManager.Tests/</code> SDK-style project exists, builds, and is included in the <code>.slnx</code>.</td><td><span class="chip area">tests</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-23"><td><a href="#AC-23">AC-23</a></td><td>The test project uses NUnit 4.x and FluentAssertions 7.x (license pinned to 7.x).</td><td><span class="chip area">tests</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-24"><td><a href="#AC-24">AC-24</a></td><td>Static-state isolation infrastructure is present so tests touching RimWorld/Verse or OM static state (<code>ApparelScoring._isInitialized</code>, the <code>ConditionalWeakTable</code>, static <code>Settings</code> fields) snapshot/restore and do not bleed between tests.</td><td><span class="chip area">tests</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-25"><td><a href="#AC-25">AC-25</a></td><td>RimWorld assembly-resolver infrastructure is present so tests load against the game assemblies.</td><td><span class="chip area">tests</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-26"><td><a href="#AC-26">AC-26</a></td><td>Initial coverage exists for the highest-value near-pure logic: <code>WorkTypeHelper.GetNormalizedWorkTypeWeights</code> (incl. <code>wpMin==wpMax</code>, empty-set, single-work-type branches), <code>ApparelCache.GetWorkTypesScore</code> weighted-sum, and <code>ApparelScoring</code> factor multiplication.</td><td><span class="chip area">tests</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-27"><td><a href="#AC-27">AC-27</a></td><td>The transpiler's fail-soft contract (pattern-not-found → returns original IL + logs, never throws) is characterization-tested where the resolver fixture allows, or documented as integration-verified-in-game otherwise.</td><td><span class="chip area">tests</span></td><td><span class="chip prio-should">should</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ac-w7-conformance">
+  <h2>Acceptance criteria — W7 Rule conformance</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-28"><td><a href="#AC-28">AC-28</a></td><td>The zero-warnings policy is enforced: <code>TreatWarningsAsErrors=true</code> with a high warning level, and NetAnalyzers (9.0.0) reports 0 warnings on a clean build.</td><td><span class="chip area">conformance</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-29"><td><a href="#AC-29">AC-29</a></td><td>Language policy holds: all docs are in English; any new user-facing UI string is added to <code>Resources.Strings</code> (key-derived from <code>ModId</code> + <code>nameof</code>) and the English Keyed XML in the same change.</td><td><span class="chip area">conformance</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-30"><td><a href="#AC-30">AC-30</a></td><td>Logging conformance is confirmed held: zero raw <code>Verse.Log.*</code> calls; all diagnostics route through the project <code>Logger</code> wrapping <code>Common.Logger</code>.</td><td><span class="chip area">conformance</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ac-end-to-end">
+  <h2>Acceptance criteria — End-to-end &amp; published-mod constraint</h2>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-31"><td><a href="#AC-31">AC-31</a></td><td>The solution builds end-to-end on the modern stack (<code>dotnet build</code> on the <code>.slnx</code>) and all unit tests pass.</td><td><span class="chip area">end-to-end</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-32"><td><a href="#AC-32">AC-32</a></td><td>Save compatibility is preserved: the Scribe keys (<code>WorkTypeScoreFactor</code>, <code>WorkTypeRules</code>) and the serialized shape of persisted settings remain stable across the migration.</td><td><span class="chip area">published-mod</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-33"><td><a href="#AC-33">AC-33</a></td><td>Any change that is user-visible (settings/UI/labels) or that could break existing saves is explicitly flagged in the design ADR with its migration/communication implication, even though no automated backward-compatibility shim is required (<code>backward_compat=none</code>).</td><td><span class="chip area">published-mod</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="traceability">
+  <h2>Story → AC traceability</h2>
+  <table>
+    <thead>
+      <tr><th>User story</th><th>Acceptance criteria</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><a href="#US-1">US-1</a> — audit against reference</td><td>AC-1, AC-2, AC-3</td></tr>
+      <tr><td><a href="#US-2">US-2</a> — restructure to reference layout</td><td>AC-4, AC-5, AC-6, AC-7</td></tr>
+      <tr><td><a href="#US-3">US-3</a> — modern stack, portable, zero-warnings</td><td>AC-8, AC-9, AC-10, AC-11, AC-12, AC-13, AC-14, AC-28, AC-31</td></tr>
+      <tr><td><a href="#US-4">US-4</a> — reuse over duplication</td><td>AC-15, AC-16, AC-17</td></tr>
+      <tr><td><a href="#US-5">US-5</a> — behaviour &amp; save preservation, flagged changes</td><td>AC-20, AC-21, AC-32, AC-33</td></tr>
+      <tr><td><a href="#US-6">US-6</a> — test project, isolation, resolver, coverage</td><td>AC-22, AC-23, AC-24, AC-25, AC-26, AC-27</td></tr>
+      <tr><td><a href="#US-7">US-7</a> — rule-set conformance</td><td>AC-5, AC-18, AC-19, AC-29, AC-30</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="non-goals" class="callout warn">
+  <h2>Non-goals</h2>
+  <ul class="non-goals">
+    <li><b>EM-only systems OM does not have</b> — StatDefs, loadout/weapon scoring, and SimpleSidearms integration are NOT added to OM.</li>
+    <li><b>Optional-mod integrations</b> — no SimpleSidearms / Combat Extended / VFE soft-ordering or compatibility is added (OM is integration-free by design).</li>
+    <li><b>UX / UI change</b> — no UX spec is produced this sprint and no UI change is made; OM's settings window (General + Work Types tabs) is unchanged. This is an alignment/migration sprint, not a feature sprint.</li>
+    <li><b>Workflow infrastructure</b> — <code>.asd/</code> and <code>.claude/</code> directories (rules, templates, agents, skills, hooks, config) are not modified by this sprint's product work; the stale "current vs target" caveats in <code>custom-*-rules.md</code> are post-sprint housekeeping (DM-7).</li>
+    <li><b>LordKuper.Common itself</b> — the upstream shared library is consumed, not modified; any gap is reused-around or noted, not patched here.</li>
+    <li><b>Persistent requirements doc</b> — no <code>design/product/requirements.html</code> is produced; no new user-facing behaviour is introduced, so there is no feature set to capture as a persistent requirements artifact.</li>
+  </ul>
+</section>
+
+<section id="assumptions">
+  <h2>Assumptions &amp; dependencies</h2>
+  <ul>
+    <li>The EM sprint-001 shape is the structural and procedural reference, adapted to OM's narrower (integration-free) feature surface.</li>
+    <li>OM's two upstream compile-only dependencies — <code>LordKuper.Common</code> 1.6 and <code>Lib.Harmony</code> (target 2.4.2) — are consumed, not forked; RimWorld <code>Assembly-CSharp</code> + Unity modules are game-bound HintPath references resolved via env vars after W3.</li>
+    <li>A green <code>dotnet build</code> and the in-game patch-applied verification depend on the game assemblies and <code>rimworld-common</code> being resolvable on the build machine (see audit R-C5).</li>
+    <li>The persistent <code>design/</code> docs (concept, stack, 12 tech-references) already describe the TARGET standard; this sprint makes the code catch up, after which the "current vs target" framing is reconciled (audit DM-1, DM-2). Those reconciliations are tracked in the documentation migration plan, not in this PRD.</li>
+  </ul>
+</section>
+
+      </main>
+      <footer>by asd-ba | 2026-06-07 | sprint 001-full-audit-alignment</footer>
+    </div>
+  </div>
+  <script>
+    // Scrollspy: highlight current section in TOC
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>
