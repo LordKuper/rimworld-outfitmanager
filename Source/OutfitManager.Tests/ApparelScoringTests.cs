@@ -17,7 +17,7 @@ public class ApparelScoringTests : StateIsolationTestBase
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld context; see MS-3 in-game verification")]
+    [Ignore("Requires live RimWorld Pawn + Apparel context; cannot be constructed without a running game")]
     public void GetPawnApparelWorkScore_MultipliesScoreByFactor()
     {
         // Expected: result = workScore * WorkTypeScoreFactor.
@@ -29,7 +29,7 @@ public class ApparelScoringTests : StateIsolationTestBase
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld context; see MS-3 in-game verification")]
+    [Ignore("Requires live RimWorld Pawn + Apparel context; cannot be constructed without a running game")]
     public void GetPawnApparelWorkScore_WithNoActiveWorkTypes_ReturnsZero()
     {
         // Expected: 0 when no work types are active.
@@ -41,7 +41,7 @@ public class ApparelScoringTests : StateIsolationTestBase
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld context; see MS-3 in-game verification")]
+    [Ignore("Requires live RimWorld Pawn + Apparel context; cannot be constructed without a running game")]
     public void GetPawnApparelWorkScore_WithNullWorkSettings_ReturnsZero()
     {
         // Expected: 0 when workSettings is null.
@@ -57,29 +57,30 @@ public class ApparelScoringTests : StateIsolationTestBase
     /// </summary>
     [Test]
     [Description("CHARACTERIZATION: FirstOrDefault rule lookup consolidation is behaviour-neutral")]
-    [Ignore("Requires live RimWorld Apparel context; in-game verification pending")]
+    [Ignore("Requires live RimWorld Apparel context; cannot construct Apparel without a running game")]
     public void ApparelCache_FirstOrDefaultLookupPaths_AreFunctionallyEquivalent()
     {
         // Expected: both FirstOrDefault lookup paths (Update and GetWorkTypeScore) return identical scores.
-        // Purpose: Prove C-3 consolidation (single lookup path) is behaviour-neutral.
+        // Purpose: Verify that the consolidated single lookup path is behaviour-neutral relative to
+        //          the previous dual-lookup approach.
         // Coverage: Ensures cached vs. uncached lookups are equivalent before simplification.
     }
 
     /// <summary>
-    ///     CHARACTERIZATION: ApparelScoring.Initialize() now sets _isInitialized = true AFTER
+    ///     CHARACTERIZATION: ApparelScoring.Initialize() sets _isInitialized = true AFTER
     ///     InitializeStatRanges() completes, so a failure during initialization does not leave the flag
     ///     set with partially-seeded state. This test documents that _isInitialized is true after a
-    ///     full successful Initialize() cycle, confirming the flag-ordering fix is behaviour-neutral
-    ///     from the caller's perspective.
+    ///     full successful Initialize() cycle, confirming the flag is set only on success.
     /// </summary>
     [Test]
     [Description("CHARACTERIZATION: Initialize() sets _isInitialized only after full init completes")]
-    [Ignore("Requires live RimWorld context for full initialization cycle; in-game verification pending")]
-    public void ApparelScoring_InitializeFlagIsSetImmediately()
+    [Ignore("Requires live RimWorld context for full initialization cycle; cannot run without a running game")]
+    public void ApparelScoring_InitializeFlagIsSetAfterFullInit()
     {
-        // Expected: _isInitialized is true after Initialize() completes.
-        // Purpose: Document current flag-setting order (before InitializeStatRanges).
-        // Coverage: Ensures flag-ordering fix (if any) preserves current behaviour.
+        // Expected: _isInitialized is true after Initialize() completes successfully.
+        // Purpose: Document that the flag is set only after InitializeStatRanges() succeeds,
+        //          so a mid-seed exception leaves the flag clear and the next call retries.
+        // Coverage: Ensures flag-ordering is preserved through any future refactor.
     }
 
     /// <summary>

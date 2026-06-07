@@ -4,7 +4,7 @@ namespace LordKuper.OutfitManager.Tests;
 ///     Unit tests for <see cref="ApparelCache" /> weighted-sum scoring logic.
 ///     Tests the weighted-sum calculation: sum(workTypeScore[i] * weight[i]).
 ///     NOTE: These tests require live RimWorld context to construct Apparel objects.
-///     Currently marked as ignored pending in-game verification (MS-3).
+///     They are ignored until in-game verification infrastructure is available.
 /// </summary>
 [TestFixture]
 [NonParallelizable]
@@ -15,7 +15,7 @@ public class ApparelCacheTests : StateIsolationTestBase
     ///     IGNORED: Requires live RimWorld Apparel context.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld Apparel context; see MS-3 in-game verification")]
+    [Ignore("Requires live RimWorld Apparel context; cannot construct Apparel without a running game")]
     public void GetWorkTypesScore_WithEmptyWeights_ReturnsZero()
     {
         // Expected: empty weights dict returns score of 0.
@@ -27,7 +27,7 @@ public class ApparelCacheTests : StateIsolationTestBase
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld Apparel context; see MS-3 in-game verification")]
+    [Ignore("Requires live RimWorld Apparel context; cannot construct Apparel without a running game")]
     public void GetWorkTypesScore_WithSingleWorkType_ReturnsWeightedScore()
     {
         // Expected: single work type weight applied to its score.
@@ -39,7 +39,7 @@ public class ApparelCacheTests : StateIsolationTestBase
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld Apparel context; see MS-3 in-game verification")]
+    [Ignore("Requires live RimWorld Apparel context; cannot construct Apparel without a running game")]
     public void GetWorkTypesScore_WithMultipleWorkTypes_SumsWeightedScores()
     {
         // Expected: sum(score[i] * weight[i]) for all work types.
@@ -51,7 +51,7 @@ public class ApparelCacheTests : StateIsolationTestBase
     ///     IGNORED: Requires live RimWorld context.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld Apparel context; see MS-3 in-game verification")]
+    [Ignore("Requires live RimWorld Apparel context; cannot construct Apparel without a running game")]
     public void GetWorkTypesScore_WithinCacheWindow_ReturnsSameScore()
     {
         // Expected: same quadrum/day returns cached score without recomputation.

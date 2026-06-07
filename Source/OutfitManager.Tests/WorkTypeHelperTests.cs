@@ -10,7 +10,7 @@ namespace LordKuper.OutfitManager.Tests;
 ///     math (no Pawn, no DefDatabase) and run as real [Test]s.
 ///     Tests that exercise the public <see cref="WorkTypeHelper.GetNormalizedWorkTypeWeights(Pawn)" />
 ///     overload require a live RimWorld Pawn + workSettings context and remain [Ignore] until
-///     in-game verification is available (TODO(sprint-001): MS-3 in-game verification).
+///     in-game verification infrastructure is available.
 /// </summary>
 [TestFixture]
 [NonParallelizable]
@@ -111,10 +111,10 @@ public class WorkTypeHelperTests : StateIsolationTestBase
     /// <summary>
     ///     When a pawn has null workSettings, GetNormalizedWorkTypeWeights returns an empty dictionary.
     ///     IGNORED: requires a live RimWorld Pawn with workSettings context.
-    ///     TODO(sprint-001): enable once in-game verification infrastructure is available (MS-3).
+    ///     TODO(sprint-001): enable once in-game verification infrastructure is available.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld Pawn + workSettings context; deferred to in-game verification (MS-3)")]
+    [Ignore("Requires live RimWorld Pawn + workSettings context; cannot construct Pawn without a running game")]
     public void GetNormalizedWorkTypeWeights_WithNullWorkSettings_ReturnsEmpty()
     {
         // Expected: empty result when pawn.workSettings is null.
@@ -124,10 +124,10 @@ public class WorkTypeHelperTests : StateIsolationTestBase
     /// <summary>
     ///     When a pawn has no active work types with matching rules, GetNormalizedWorkTypeWeights returns empty.
     ///     IGNORED: requires live RimWorld context.
-    ///     TODO(sprint-001): enable once in-game verification infrastructure is available (MS-3).
+    ///     TODO(sprint-001): enable once in-game verification infrastructure is available.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld Pawn context; deferred to in-game verification (MS-3)")]
+    [Ignore("Requires live RimWorld Pawn context; cannot construct Pawn without a running game")]
     public void GetNormalizedWorkTypeWeights_WithNoActiveWorkTypes_ReturnsEmpty()
     {
         // Expected: empty result when no work types pass the rule+StatWeights filter.
@@ -137,10 +137,10 @@ public class WorkTypeHelperTests : StateIsolationTestBase
     /// <summary>
     ///     When a work type has no matching rule or empty stat weights, it is excluded from the result.
     ///     IGNORED: requires live RimWorld context.
-    ///     TODO(sprint-001): enable once in-game verification infrastructure is available (MS-3).
+    ///     TODO(sprint-001): enable once in-game verification infrastructure is available.
     /// </summary>
     [Test]
-    [Ignore("Requires live RimWorld Pawn context; deferred to in-game verification (MS-3)")]
+    [Ignore("Requires live RimWorld Pawn context; cannot construct Pawn without a running game")]
     public void GetNormalizedWorkTypeWeights_WithNoRulesForWorkType_ExcludesWorkType()
     {
         // Expected: work types with null rules or empty StatWeights are filtered out before normalization.
