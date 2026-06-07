@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: architecture decision ADR-0003 (production nullable-reference-types migration)
+  excludes: requirements, ux, code
+  delegates_to: code (implementation), adr-0002 (SDK conversion / zero-warnings gate)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="001-full-audit-alignment">
+  <meta name="status" content="proposed">
+  <meta name="updated" content="2026-06-07">
+  <meta name="responsibility" content="architecture decision ADR-0003 (production nullable-reference-types migration)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0003 · Production nullable-reference-types migration</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .badges .status-proposed    { color: var(--warn);    border-color: var(--warn); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    /* ADR */
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .provenance-chip { color: var(--warn); border-color: var(--warn); background: var(--chip-should-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      .adr { break-inside: avoid; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#adr-0003-context">Context</a></li>
+        <li><a href="#adr-0003-decision">Decision</a></li>
+        <li><a href="#adr-0003-consequences">Consequences</a></li>
+        <li><a href="#adr-0003-alternatives">Alternatives considered</a></li>
+        <li><a href="#adr-0003-related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-proposed">proposed</span>
+        </div>
+        <h1>ADR-0003 · Production nullable-reference-types migration</h1>
+        <div class="stats">
+          <span class="chip">proposed</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-07</span>
+        </div>
+        <p class="lede">This ADR is <strong>original</strong>. It is intentionally <strong><code>proposed</code></strong> per a sprint design decision taken at the design approval gate; status moves to <code>accepted</code> at implementation. This divergence from the audit recommendation is deliberate, not an oversight.</p>
+      </header>
+      <main>
+
+<article class="adr" id="adr-0003">
+  <div class="meta">
+    <span class="status-chip status-proposed">proposed</span>
+    <span class="chip area">subsystem: project</span>
+    <span class="chip">ADR-0003</span>
+  </div>
+
+  <h2 id="adr-0003-context">Context</h2>
+  <p>The legacy <code>OutfitManager.csproj</code> does not set <code>&lt;Nullable&gt;</code>; nullability intent is carried by a single JetBrains <code>[NotNull]</code> attribute at <code>ApparelCache.cs:24</code> (a constructor parameter). The house standard (per <code>custom-coding-rules.md</code> and <code>stack.html</code>) requires <code>Nullable enable</code> project-wide with C# nullable-reference-types replacing JetBrains nullability attributes, and the two systems must not coexist. The audit measured OM's annotation surface as trivial — exactly 1 <code>[NotNull]</code>, 0 <code>[CanBeNull]</code> — roughly two orders of magnitude smaller than the sibling EM migration (224 attributes / 131 NRT sites). OM already uses modern C# idioms (file-scoped namespaces, collection expressions, target-typed <code>new()</code>), and <code>LordKuper.Common</code>'s consumed types (<code>WorkTypeThingRule</code>, <code>ThingCache</code>) are already <code>Nullable enable</code>, so OM's consumption sites largely line up.</p>
+  <p>Forces: (1) the flip cannot be compile-verified on the legacy csproj (it cannot <code>dotnet build</code>), so the exact warning count is estimated, not measured — bounded well under 20 distinct sites given the ~640 LOC and the idiom baseline; (2) the warnings the flip surfaces concentrate on Scribe-populated static fields (<code>_selectedWorkTypeRule</code>, <code>_workTypeRules</code>) and <code>FirstOrDefault</code> nullable results in <code>ApparelCache</code> / <code>WorkTypeHelper</code> / <code>Settings_WorkTypes</code>; (3) blanket <code>= null!</code> on Scribe-populated fields can mask a genuine null and must be applied judiciously; (4) <code>[UsedImplicitly]</code> (4 occurrences across 3 files) is <em>not</em> a nullability attribute and must be preserved along with its <code>using JetBrains.Annotations;</code>.</p>
+
+  <h2 id="adr-0003-decision">Decision</h2>
+  <p class="lede">Enable <code>Nullable enable</code> on the production project and resolve all surfaced NRT sites green under <code>TreatWarningsAsErrors</code>. Replace the lone <code>[NotNull]</code> at <code>ApparelCache.cs:24</code> with a real non-nullable parameter type (<code>ThingCache</code>'s base constructor already throws <code>ArgumentNullException</code> on null, so the runtime contract is preserved) and remove <code>using JetBrains.Annotations;</code> from <code>ApparelCache.cs</code> (it carries no other JetBrains attribute). For Scribe-populated <strong>collection</strong> fields (<code>_workTypeRules</code>), declare them nullable and initialize with <code>??=</code> in the init path per <code>custom-coding-rules.md</code>, rather than blanket <code>null!</code>; for legitimately-nullable scalars/locals (the <code>FirstOrDefault</code> results), use <code>?</code> plus a guard. The <code>[UsedImplicitly]</code> attributes and their <code>using</code> directives in the other three files are left untouched. JetBrains nullability attributes and C# NRT must not coexist.</p>
+
+  <h2 id="adr-0003-consequences">Consequences</h2>
+  <div class="consequences">
+    <div class="pros">
+      <h3>Positive</h3>
+      <ul>
+        <li>OM's nullability intent is expressed in the compiler-checked NRT system rather than advisory attributes, matching the house standard and the consumed Common surface (AC-12).</li>
+        <li>The migration surface is tiny (1 attribute, est. &lt;20 sites) — low risk and quick relative to the sibling EM migration.</li>
+        <li>Removing the lone JetBrains nullability attribute eliminates the forbidden two-systems coexistence while preserving the runtime null-guard via the Common base ctor.</li>
+        <li>The flip is gated by the new W6 tests and <code>TreatWarningsAsErrors</code>, so a mis-applied annotation is caught rather than shipped.</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h3>Negative</h3>
+      <ul>
+        <li>The exact warning set is estimated, not measured — the legacy csproj cannot compile-test the flag, so the true count is only known after ADR-0002's SDK conversion lands (the two are sequenced).</li>
+        <li>Blanket <code>= null!</code> on Scribe-populated fields, if used carelessly, can hide a genuine null and defeat the purpose; the chosen <code>??=</code>/guard approach is more verbose and must be applied per-field with judgement (risk R-C4).</li>
+        <li>Touching the Scribe-populated static fields risks an inadvertent change to load/save behaviour if the initialization path shifts — must be characterization-tested to preserve save compatibility (AC-32).</li>
+        <li>Adds a small ongoing obligation: future Common upgrades that change nullability annotations on consumed types may surface new OM warnings under <code>TreatWarningsAsErrors</code>.</li>
+      </ul>
+    </div>
+  </div>
+  <p><strong>Published-mod flag (AC-32):</strong> the nullable flip must not alter the serialized shape of <code>_workTypeRules</code> / <code>WorkTypeScoreFactor</code> — the <code>??=</code> init for the Scribe collection is specifically chosen to keep load behaviour identical to the current default-seeding path; verified against the W6 characterization tests.</p>
+
+  <h2 id="adr-0003-alternatives">Alternatives considered</h2>
+  <ul class="alt-list">
+    <li><strong>Keep JetBrains nullability attributes, do not enable NRT</strong> — rejected: violates the house standard, leaves nullability advisory rather than compiler-checked, and would block the zero-warnings/standard-conformance goal.</li>
+    <li><strong>Blanket <code>= null!</code> on every Scribe/reflection-populated field</strong> — rejected as the default: it silences the compiler without expressing real intent and can mask genuine nulls; reserved only for fields that are guaranteed-populated-before-use by the framework, with <code>??=</code>/guards preferred for collections.</li>
+    <li><strong>Annotate per-file / per-region incrementally (<code>#nullable enable</code> islands)</strong> — rejected because OM is small enough to flip project-wide in one pass; partial islands add ceremony and leave an inconsistent codebase.</li>
+    <li><strong>Defer the nullable flip to a later sprint</strong> — rejected: it is a headline W3 workstream and the migration surface is trivial; deferring would leave the project half-aligned and the zero-warnings gate unreachable.</li>
+  </ul>
+
+  <h2 id="adr-0003-related">Related ADRs</h2>
+  <ul>
+    <li><a href="adr-0002-legacy-to-modern-stack-migration.html">ADR-0002</a>: the SDK conversion enables <code>&lt;Nullable&gt;</code> and the <code>TreatWarningsAsErrors</code> gate that this migration must satisfy.</li>
+  </ul>
+</article>
+
+      </main>
+      <footer>by asd-architect | 2026-06-07 | sprint 001-full-audit-alignment</footer>
+    </div>
+  </div>
+</body>
+</html>
