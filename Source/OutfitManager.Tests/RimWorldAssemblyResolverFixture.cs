@@ -1,14 +1,14 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-
-namespace LordKuper.OutfitManager.Tests;
 
 /// <summary>
 ///     Resolves RimWorld assemblies by reading the AssemblyMetadata "RimWorldManagedDir" attribute
 ///     and registering an AppDomain.AssemblyResolve handler that loads assemblies from that directory.
-///     This fixture runs at the namespace root level before any tests in the LordKuper.OutfitManager.Tests
-///     namespace tree.
+///     Declared at the global (namespace-less) scope so NUnit runs this fixture before any test type
+///     in any namespace loads — ensuring the RimWorld assembly resolver is registered before the CLR
+///     attempts to load any RimWorld-typed class.
 /// </summary>
 [SetUpFixture]
 public class RimWorldAssemblyResolverFixture
@@ -21,19 +21,24 @@ public class RimWorldAssemblyResolverFixture
     public void RegisterAssemblyResolver()
     {
         var testAssembly = typeof(RimWorldAssemblyResolverFixture).Assembly;
-        var rimWorldManagedDirAttribute = testAssembly.GetCustomAttribute<AssemblyMetadataAttribute>();
-        if (rimWorldManagedDirAttribute?.Key != "RimWorldManagedDir" ||
-            string.IsNullOrEmpty(rimWorldManagedDirAttribute.Value))
-            throw new InvalidOperationException(
-                "RimWorldAssemblyResolverFixture: AssemblyMetadata 'RimWorldManagedDir' not found or empty. " +
+        var rimWorldManagedDirAttribute = testAssembly
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => a.Key == "RimWorldManagedDir")
+            ?? throw new InvalidOperationException(
+                "RimWorldAssemblyResolverFixture: AssemblyMetadata 'RimWorldManagedDir' not found. " +
                 "Check the test project file for <AssemblyMetadata Include=\"RimWorldManagedDir\" Value=\"...\" />.");
+
+        if (string.IsNullOrEmpty(rimWorldManagedDirAttribute.Value))
+            throw new InvalidOperationException(
+                "RimWorldAssemblyResolverFixture: AssemblyMetadata 'RimWorldManagedDir' is empty. " +
+                "Check that the RIMWORLD_DIR environment variable is set correctly.");
 
         var rimWorldManagedDir = rimWorldManagedDirAttribute.Value;
 
         if (!Directory.Exists(rimWorldManagedDir))
             throw new DirectoryNotFoundException(
                 $"RimWorldAssemblyResolverFixture: RimWorldManagedDir '{rimWorldManagedDir}' does not exist. " +
-                "Check that RIMWORLD_DIR environment variable is set correctly.");
+                "Check that the RIMWORLD_DIR environment variable is set correctly.");
 
         AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
         {
